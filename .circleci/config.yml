@@ -1,0 +1,129 @@
+version: 2.1
+orbs:
+  aws-s3: circleci/aws-s3@1.0.15
+
+# Reusable commands
+commands:
+  install-clj-tools:
+    description: "Install Clojure CLI tools"
+    steps:
+      - run:
+          name: Install Clojure CLI tools
+          command: |
+            # https://github.com/Quantisan/docker-clojure/blob/master/target/openjdk-11-stretch/tools-deps/Dockerfile
+            export CLOJURE_VERSION=1.10.1.483
+
+            cd /tmp
+
+            wget https://download.clojure.org/install/linux-install-$CLOJURE_VERSION.sh && \
+            chmod +x linux-install-$CLOJURE_VERSION.sh && \
+            sudo ./linux-install-$CLOJURE_VERSION.sh && \
+            clojure -e "(clojure-version)"
+jobs:
+  test:
+    docker:
+      - image: circleci/clojure:openjdk-11-tools-deps
+        environment:
+          - JAVA_TOOL_OPTIONS: "-Xmx3550m"
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-deps-checksum-{{ checksum "PROJECTNAMESPACE.PROJECTNAME/deps.edn" }}
+            - v1-deps-checksum
+      - run:
+          name: Test
+          command: |
+            cd PROJECTNAMESPACE.PROJECTNAME && bin/kaocha --plugin kaocha.plugin/junit-xml --junit-xml-file target/test-results/kaocha/results.xml
+      - store_test_results:
+          path: PROJECTNAMESPACE.PROJECTNAME/target/test-results
+      - save_cache:
+          paths:
+            - ~/.m2
+            - PROJECTNAMESPACE.PROJECTNAME/.cpcache
+            - ~/.gitlibs
+          key: v1-deps-checksum-{{ checksum "PROJECTNAMESPACE.PROJECTNAME/deps.edn" }}
+  lint:
+    docker:
+      - image: circleci/clojure:openjdk-11-tools-deps-node
+    steps:
+      - checkout
+      - run:
+          name: Install Reviewdog
+          command: curl -L https://github.com/reviewdog/reviewdog/releases/download/v0.9.17/reviewdog_0.9.17_Linux_x86_64.tar.gz | tar xz reviewdog
+      - run:
+          name: Install clj-kondo
+          command: wget https://github.com/borkdude/clj-kondo/releases/download/v2020.01.13/clj-kondo-2020.01.13-linux-amd64.zip -O /tmp/clj-kondo.zip && unzip /tmp/clj-kondo.zip
+      - run:
+          name: Install Shellcheck
+          command: |
+            # https://github.com/koalaman/shellcheck#installing-a-pre-compiled-binary
+            scversion="v0.7.0" # or "v0.4.7", or "latest"
+            wget -qO- "https://storage.googleapis.com/shellcheck/shellcheck-${scversion?}.linux.x86_64.tar.xz" | tar -xJv
+            sudo cp "shellcheck-${scversion}/shellcheck" /usr/local/bin/
+            shellcheck --version
+      - run:
+          name: Install file
+          command: |
+            sudo apt-get install file
+      - restore_cache:
+          keys:
+            - lint-{{ checksum "PROJECTNAMESPACE.PROJECTNAME/deps.edn" }}-{{ checksum "clj-kondo" }}
+            - lint-
+            - root-
+      - run:
+          name: Lint project
+          shell: /bin/bash
+          command: |
+            # Make downloaded tools available to lint script
+            PATH="$PWD:$PATH"
+
+            # Pipe lint output to tty so CI captures the full logs
+            ./bin/lint | tee /dev/tty | ./reviewdog -reporter=github-check -efm="%f:%l:%c: %m"
+      - save_cache:
+          key: lint-{{ checksum "PROJECTNAMESPACE.PROJECTNAME/deps.edn" }}
+          paths:
+            - ~/.m2
+            - ~/.gitlibs
+            - PROJECTNAMESPACE.PROJECTNAME/.clj-kondo/.cache
+  build-manual:
+    docker:
+      - image: juxtalx/plantuml-jruby
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gem-cache-v1-{{ arch }}-{{ .Branch }}-{{ checksum "docs/Gemfile.lock" }}
+            - gem-cache-v1-{{ arch }}-{{ .Branch }}
+            - gem-cache-v1
+      - run:
+          name: Install asciidoctor deps
+          command: |
+            cd docs
+            gem install bundler:1.17.2
+            bundle install --path vendor/bundle
+      - save_cache:
+          key: gem-cache-v1-{{ arch }}-{{ .Branch }}-{{ checksum "docs/Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - run:
+          name: Build PDF
+          command: |
+            ls
+            cd docs
+            make
+      - aws-s3/copy:
+          from: docs/Manual.pdf
+          to: 's3://PROJECTNAMESPACE-manual'
+  
+workflows:
+  test:
+    jobs:
+      - test
+      - lint
+      - build-manual:
+          filters:
+            branches:
+              only:
+                - master
+    

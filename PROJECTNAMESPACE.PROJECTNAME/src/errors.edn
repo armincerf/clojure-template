@@ -1,0 +1,30 @@
+{:not-found {:type :invalid-request
+             :message "The endpoint {uri} requested does not exist."
+             :status 404}
+ :method-not-allowed {:type :invalid-request
+                      :message "The endpoint {uri} does accept request method {method}."
+                      :status 405}
+ :not-acceptable {:type :invalid-request
+                  :message "The endpoint {uri} does not generate content."
+                  :status 406}
+ :invalid-body {:type :invalid-request
+                :message "Request body was invalid due to malformed request."
+                :status 400}
+ :invalid-field {:type :invalid-request
+                 :message "The field {key} with value {value} was improperly formatted or of an invalid type."
+                 :status 400}
+ :missing-field {:type :invalid-request
+                 :message "One or more fields are missing."
+                 :status 400}
+ :unauthorized {:type :invalid-request
+                :message "Unauthorized. Auth method = {auth-method}"
+                :status 401}
+ :internal-server-error {:type :api-error
+                         :message "Unable to process request due to an internal system issue."
+                         :status 500}
+ :PROJECTNAMESPACE/invalid-message {:type :invalid-request
+                        :message "Received invalid request"
+                        :status 400}
+ :PROJECTNAMESPACE/bad-secret {:type :invalid-request
+                   :message "Missing or Incorrect shared secret. Body: {body}"
+                   :status 401}}

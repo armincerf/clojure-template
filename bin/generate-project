@@ -1,0 +1,22 @@
+echo 'Make sure you have rename and gnu-sed installed'
+echo 'Enter the namespace for your project (usually your companies name)'
+read namespace
+echo "Enter a name for your project"
+read projectname
+fullname="$namespace.$projectname"
+echo $fullname
+
+# change directory and file names
+mv PROJECTNAMESPACE.PROJECTNAME/src/PROJECTNAMESPACE/PROJECTNAME PROJECTNAMESPACE.PROJECTNAME/src/PROJECTNAMESPACE/$projectname
+mv PROJECTNAMESPACE.PROJECTNAME/src/PROJECTNAMESPACE PROJECTNAMESPACE.PROJECTNAME/src/$namespace
+mv PROJECTNAMESPACE.PROJECTNAME/test/PROJECTNAMESPACE/PROJECTNAME PROJECTNAMESPACE.PROJECTNAME/test/PROJECTNAMESPACE/$projectname
+mv PROJECTNAMESPACE.PROJECTNAME/test/PROJECTNAMESPACE PROJECTNAMESPACE.PROJECTNAME/test/$namespace
+mv PROJECTNAMESPACE.PROJECTNAME $fullname
+
+# Rename files
+
+# Rename text within files
+find . -type f \( -iname \*.clj -o -iname \*.cljs -iname \*.cljc -iname \*.edn -iname \*.yml -iname \*.properties -iname \lint \) -print0 | xargs -0 sed -i '' "s/PROJECTNAMESPACE/$namespace/g"
+
+# Rename text within files
+find . -type f \( -iname \*.clj -o -iname \*.cljs -iname \*.cljc -iname \*.edn -iname \*.yml -iname \*.properties -iname \lint \) -print0 | xargs -0 sed -i '' "s/PROJECTNAME/$projectname/g"

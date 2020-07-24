@@ -1,0 +1,81 @@
+{:paths ["src" "resources"]
+ :deps
+ {org.clojure/clojure {:mvn/version "1.10.0"}
+  juxt.edge/lib.app {:local/root "../lib/edge.app"}
+
+  juxt.crux/ig {:local/root "../lib/crux.ig"}
+  tick {:mvn/version "0.4.23-alpha"}
+  metosin/reitit {:mvn/version "0.4.2"}
+
+  net.danielcompton/defn-spec-alpha {:mvn/version "0.1.0"}
+  org.clojure/spec.alpha {:mvn/version "0.2.187"}
+  com.bhauman/spell-spec {:mvn/version "0.1.1"}
+  camel-snake-kebab {:mvn/version "0.4.1"}
+  stringer {:mvn/version "0.4.1"}
+  user-agent {:mvn/version "0.1.0"}
+  medley {:mvn/version "1.3.0"}
+  aleph {:mvn/version "0.4.6"}
+  ring/ring-core {:mvn/version "1.8.0"}
+  ring/ring-headers {:git/url "https://github.com/falconproj/ring-headers"
+                     :sha "cdebdac55f9ef172a70beceb39a65a001d9f22e5"}
+  metosin/ring-http-response {:mvn/version "0.9.1"}
+  co.deps/ring-etag-middleware {:mvn/version "0.2.1"}
+  hiccup {:mvn/version "1.0.5"}
+  integrant {:mvn/version "0.8.0"}
+
+  cheshire {:mvn/version "5.10.0"}
+  buddy {:mvn/version "2.0.0"}
+  io.seruco.encoding/base62 {:mvn/version "0.1.3"}
+  jinx {:mvn/version "0.1.6"}
+
+  ;; Webjars
+  org.webjars/font-awesome {:mvn/version "5.13.0"}
+
+  ;; Logging
+  org.clojure/tools.logging {:mvn/version "1.0.0"}
+  org.slf4j/jcl-over-slf4j {:mvn/version "1.7.30"}
+  org.slf4j/jul-to-slf4j {:mvn/version "1.7.30"}
+  org.slf4j/log4j-over-slf4j {:mvn/version "1.7.30"}
+  ch.qos.logback/logback-classic {:mvn/version "1.2.3"
+                                  :exclusions [org.slf4j/slf4j-api]}}
+
+ :aliases
+ {:dev
+  {:extra-paths ["dev" "test"]
+   :extra-deps {juxt.edge/lib.app.dev {:local/root "../lib/edge.app.dev"}
+                lambdaisland/kaocha {:mvn/version "0.0-601"}}}
+
+  :prod
+  {:extra-deps
+   {juxt.edge/lib.app.prod {:local/root "../lib/edge.app.prod"}}}
+
+  :build {:extra-deps
+          {juxt.edge/kick {:local/root "../lib/edge.kick"}
+           juxt/kick.alpha
+           {:git/url "https://github.com/juxt/kick.alpha.git"
+            :sha "06063beadfa72dfe23480727c347976b608e8316"}
+           org.clojure/clojurescript {:mvn/version "1.10.238"}
+           com.bhauman/figwheel-main {:mvn/version "0.2.9"}
+           reagent {:mvn/version "0.10.0"}
+           re-frame {:mvn/version "0.12.0"}
+           re-pressed {:mvn/version "0.3.1"}
+           devcards {:mvn/version "0.2.7"}
+           day8.re-frame/http-fx {:mvn/version "v0.2.0"}
+           com.smxemail/re-frame-cookie-fx {:mvn/version "0.0.2"}
+           cljs-ajax {:mvn/version "0.8.0"}
+           deraen/sass4clj {:mvn/version "0.5.1"}}}
+
+  :build/once {:main-opts ["-m edge.kick"]}
+
+  :dev/build
+  {:extra-paths ["target/dev"]}
+
+  :prod/build
+  {:extra-paths ["target/prod"]}
+  :pack
+  {:extra-deps {pack/pack.alpha {:git/url "https://github.com/juxt/pack.alpha.git"
+                                 :sha "c70740ffc10805f34836da2160fa1899601fac02"}}}
+
+  :test {:extra-paths ["test"]
+         :extra-deps {lambdaisland/kaocha {:mvn/version "0.0-601"}
+                      lambdaisland/kaocha-junit-xml {:mvn/version "0.0-70"}}}}}

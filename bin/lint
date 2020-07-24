@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+
+shopt -s nullglob globstar extglob
+
+GREEN=$(tput setaf 2)
+RESET=$(tput sgr0)
+
+cd "$(dirname "$0")/.." || exit
+
+exit=0
+
+# Set TERM for CI
+ [[ -z "$TERM" ]] && TERM=dumb
+
+## clj-kondo
+
+echo -e "${GREEN}clj-kondo lint${RESET}"
+
+clj_kondo_version=$(clj-kondo --version | awk -F " " '{ print $2 }' | cut -c 2-)
+checksum_path=".clj-kondo/.cache/${clj_kondo_version}/checksum"
+
+projects=( "PROJECTNAMESPACE.PROJECTNAME" )
+
+for project in "${projects[@]}"; do
+  (
+  echo -e "${GREEN}linting ${project}${RESET}"
+  pushd "$project"
+  [[ -d .clj-kondo ]] || mkdir .clj-kondo
+
+  if [[ "$CI" = "true" ]]; then
+    # Provide the full path to allow reviewdog to localise it.
+    # Only print results for files in our source paths, not from the dependencies
+    clj_kondo_config="{:output {:canonical-paths true :include-files [\"^$PWD\"]}}"
+  else
+    clj_kondo_config='{:output {:include-files ["^src/" "^test/"]}}'
+  fi
+
+  # If our deps.edn file hasn't changed, then reuse the cache
+  # https://github.com/borkdude/clj-kondo/issues/705
+  if cmp -s <(shasum deps.edn) "$checksum_path"; then
+    git ls-files | grep -E '.clj[cs]?$' | xargs clj-kondo --config "${clj_kondo_config}" --lint
+  else
+    # Otherwise, lint everything on the classpath (this provides extra info when linting our source)
+    clj-kondo --lint "$(clojure -Spath -A:dev:test)" --config "${clj_kondo_config}"
+    # Checksum our dependencies so we don't rebuild this cache unnecessarily
+    shasum deps.edn > "$checksum_path"
+  fi
+  ) || export exit=1
+done
+
+## Shellcheck
+
+echo -e "\n\n${GREEN}Shellcheck lint${RESET}"
+
+if [[ "$CI" = "true" ]]; then
+  shellcheck_format="--format=gcc"
+else
+  shellcheck_format=""
+fi
+
+find bin -exec file --mime-type "{}" + | # Get the type of the files in bin/
+  grep "text/x-shellscript$" | # Filter out any files that aren't shell scripts
+  cut -f 1 -d ":" | # Select just the name of the file
+  xargs shellcheck ${shellcheck_format} || export exit=1 # Run shellcheck on all the shell scripts
+# Note: I tried to use --print0/-0 arguments for file/xargs, but
+# cut on macOS doesn't allow you to specify a null delimiter.
+
+## Git conflict markers
+
+echo -e "\n\n${GREEN}Git conflict markers${RESET}"
+
+# ':/' ':!bin/lint' excludes this lint file from being searched, otherwise it would match itself.
+# Our Circle images have git 2.11
+# Newer versions of git don't need the ':/'
+# Newer versions of git (2.19) support -column to identify the column. We hard-code it to 1 here.
+git grep -I --line-number -e "<<<<<<<" -e ">>>>>>>" -- ':/' ':!bin/lint' \
+ | awk -F ":" '{gsub(/\t/, "", $3); print $1":"$2":1: error: Please fully resolve merge conflicts"}' && export exit=1
+
+exit "$exit"

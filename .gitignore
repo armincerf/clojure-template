@@ -1,14 +1,25 @@
-pom.xml
-pom.xml.asc
-*.jar
-*.class
-/lib/
-/classes/
-/target/
-/checkouts/
-.lein-deps-sum
-.lein-repl-history
-.lein-plugins/
-.lein-failures
-.nrepl-port
-.cpcache/
+**/.cpcache
+**/.rebel_readline_history
+**/.nrepl-port
+**/target/*/**
+**/log/*
+!**/target/*/.gitkeep
+
+# pack'd output
+/*.jar
+**/*.jar
+
+**/.vscode
+**/.clj-kondo/.cache
+
+### Node ###
+node_modules
+# Logs
+logs
+*.log
+.npm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+

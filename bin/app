@@ -1,0 +1,27 @@
+#!/bin/sh
+
+for arg do
+  shift
+  case "$arg" in
+    -*) set -- "$@" "$arg" ;;
+    *) project_name="$arg" ;;
+  esac
+done
+
+for var in "$@"
+do
+  if [ "$var" = "--help" ] || [ "$var" = "-h" ]; then
+    project_name="edge/internal.help"
+  fi
+done
+
+
+if [ "$#" -gt 0 ] && [ -z "$project_name" ]; then
+  project_name="$1"
+  shift
+fi
+
+clojure -Sdeps '{:deps {seancorfield/clj-new {:mvn/version "0.7.6"}}}' \
+  -m clj-new.create \
+  ./lib/edge-app-template::edge-app-template \
+  "${project_name:-edge/internal.help}" -- "$@"

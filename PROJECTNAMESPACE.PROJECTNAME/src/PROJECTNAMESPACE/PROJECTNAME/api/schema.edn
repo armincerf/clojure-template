@@ -1,0 +1,71 @@
+{"components"
+ {"logicalGateway"
+  {"type" "object"
+   "crux:document" true
+   "PROJECTNAMESPACE:type" "logical-gateway"
+   "crux:containerAttribute" "customer"
+   "properties"
+   {"physicalGateway"
+    {"type" "object"
+     "crux:document" true
+     "PROJECTNAMESPACE:type" "physical-gateway"}
+    "logicalDevices"
+    {"type" "array"
+     "items"
+     {"type" "object"
+      "crux:document" true
+      "crux:containerAttribute" "logicalGateway"
+      "PROJECTNAMESPACE:type" "logical-device"}}}}}
+
+ "anyOf"
+ [{"type" "object"
+   "required" ["action" "createdBy"]
+   "crux:document" true ; doesn't actually do anything
+   "PROJECTNAMESPACE:type" "alert"
+   "properties" {"action"
+                 {"type" "string"
+                  ;;"enum" ["overload" "underload" "explode" "requiredMaintainance"]
+                  }
+                 ;;uuid of logical device
+                 "createdBy" {"type" "string"}
+                 "date"
+                 {"type" "string"
+                  "format" "date-time"}}}
+
+  {"type" "object"
+   "required" ["dealership" "action"]
+   "PROJECTNAMESPACE:type" "db-event"
+   "properties"
+   {"secret"
+    {"type" "string"}
+    "action"
+    {"type" "string"
+     "enum" ["register" "update" "evict"]}
+
+    "date"
+    {"type" "string"
+     "format" "date-time"}
+
+    "user"
+    {"type" "object"
+     "crux:document" true
+     "PROJECTNAMESPACE:type" "user"
+     "properties"
+     {"userid" {"type" "string"}}}
+
+    "dealership"
+    {"type" "object"
+     "required" ["name"]
+     "crux:document" true
+     "PROJECTNAMESPACE:type" "dealership"
+     "properties"
+     {"name"
+      {"type" "string"}
+      "customer"
+      {"type" "object"
+       "crux:document" true
+       "crux:containerAttribute" "servicedByDealership"
+       "PROJECTNAMESPACE:type" "customer"
+
+       "properties"
+       {"logicalGateway" {"$ref" "#/components/logicalGateway"}}}}}}}]}

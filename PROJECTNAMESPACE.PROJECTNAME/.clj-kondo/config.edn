@@ -1,0 +1,24 @@
+{:lint-as {net.danielcompton.defn-spec-alpha/defn schema.core/defn
+           reagent.core/with-let clojure.core/let
+           failjure.core/attempt-> clojure.core/->}
+ :skip-comments true
+ :output {:filter ["^dev"]}
+ :linters
+ {:unused-binding {:level :off}
+  :unused-referred-var {:exclude {integrant.repl [clear go halt init prep]
+                                  dev-extras [clear go reset halt init prep]}
+                        :level :error}
+  :redefined-var {:level :warning}
+  :unused-namespace {:level :warning}
+  :duplicate-require {:level :error}
+  :refer-all {:level :off}
+  :redundant-do {:level :error}
+  :redundant-let {:level :error}
+  :missing-test-assertion {:level :error}
+  :not-empty? {:level :off}
+  :cond-else {:level :off}
+  :unresolved-symbol
+  {:exclude [(devcards.core/defcard-rg)
+             (kaocha.plugin/defplugin)
+             system
+             goog.DEBUG]}}}

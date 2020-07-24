@@ -1,0 +1,110 @@
+$grey-lighten-5: #fafafa;
+$grey-lighten-4: #f5f5f5;
+$grey-lighten-3: #eeeeee;
+$grey-lighten-2: #e0e0e0;
+$grey-lighten-1: #bdbdbd;
+$grey-darken-1: #757575;
+$grey-darken-2: #616161;
+$grey-darken-3: #424242;
+$grey-darken-4: #212121;
+
+$red-lighten-5: #ffebee;
+$red-lighten-4: #ffcdd2;
+$red-lighten-3: #ef9a9a;
+$red-lighten-2: #e57373;
+$red-lighten-1: #ef5350;
+$red-darken-1: #e53935;
+$red-darken-2: #d32f2f;
+$red-darken-3: #c62828;
+$red-darken-4: #b71c1c;
+$red-accent-1: #ff8a80;
+$red-accent-2: #ff5252;
+$red-accent-3: #ff1744;
+$red-accent-4: #d50000;
+
+$green-lighten-5: #e8f5e9;
+$green-lighten-4: #c8e6c9;
+$green-lighten-3: #a5d6a7;
+$green-lighten-2: #81c784;
+$green-lighten-1: #66bb6a;
+$green-darken-1: #43a047;
+$green-darken-2: #388e3c;
+$green-darken-3: #2e7d32;
+$green-darken-4: #1b5e20;
+$green-accent-1: #b9f6ca;
+$green-accent-2: #69f0ae;
+$green-accent-3: #00e676;
+$green-accent-4: #00c853;
+
+$sidenav-width: 120px;
+$lightest-grey: #D2D6DF;
+$lighter-grey: #6E7B86;
+$divider-grey: #3B4248;
+$light-grey: #2B3338;
+$medium-grey: #414345;
+$dark-grey: #242628;
+$header-height: 2em;
+$green: #39C486;
+$dark-blue-text: #36424A;
+$light-blue: #4F87E2;
+$hero-height: 10em;
+
+// Misc/common
+
+$pill-vertical-padding: 0.15em !default;
+$pill-horizontal-padding: 0.5em !default;
+$family-sans-serif: 'Montserrat', 'sans-serif';
+
+@-webkit-keyframes moving-gradient {
+    0% { background-position: -250px 0; }
+    100% { background-position: 250px 0; }
+}
+
+//Breakpoints
+
+$break-small: 400px;
+$break-large: 1024px;
+
+// Thanks Dashboard
+
+$navbar-height: 5rem;
+$thanksBlack: #363636;
+$thanksGrey: #ACACAC;
+$thanksWhite: #fff;
+$thanksGreen: #39c486;
+$thanksOrange: #ffdb4a;
+$thanksRed: #E5625C;
+$thanksPurple: #783ac1;
+$thanksPurpleLight: #C19AE5;
+$thanksPurpleDark: #4A1984;
+$thanksDarkGrey: #444444;
+$thanksLightGrey: #eeeeee;
+$thanksBackground: #f5f6f9;
+$thanksGrey-text: #666;
+$thanksLightGrey-text: #999;
+$thanksLightestGrey: #f5f6f9;
+
+// Publisher Site
+
+$sidenav-width: 120px;
+$publisher-lightest-grey: #D2D6DF;
+$publisher-lighter-grey: #6E7B86;
+$publisher-divider-grey: #3B4248;
+$publisher-light-grey: #2B3338;
+$publisher-medium-grey: #414345;
+$publisher-dark-grey: #242628;
+$publisher-header-height: 2em;
+$publisher-green: #39C486;
+$publisher-dark-blue-text: #36424A;
+$publisher-light-blue: #4F87E2;
+$publisher-hero-height: 10em;
+
+// Marketplace site
+
+$marketplace-bottom-border: solid 1px #d6d6d6;
+
+
+// Flipboard branded pages
+
+$flipboard-blue: #059CC3;
+$flipboard-red: rgb(255, 40, 40);

@@ -1,0 +1,74 @@
+{:PROJECTNAMESPACE.PROJECTNAME.api/origin  #profile {:dev "http://localhost:7200/"
+                                                     :test "http://localhost:7201/"
+                                                     :prod "PRODURL"}
+ :edge.kick/config
+ {:kick.builder/target #profile {:dev "target/dev"
+                                 :prod "target/prod"}
+  :kick/sass {:builds #profile {:prod [{:id "PROJECTNAME"
+                                        :source "sass/app.scss"
+                                        :target "public/app.css"}]
+                                :dev []}}
+  :kick/figwheel-main {:builds [{:id "dashboard"
+                                 :main PROJECTNAMESPACE.PROJECTNAME.frontend.dashboard.main
+                                 :output-to "public/dashboard.js"
+                                 :output-dir "public/dashboard.out"
+                                 :asset-path "/dashboard.out"
+                                 :clean-outputs true
+                                 :open-url false
+                                 :closure-defines {PROJECTNAMESPACE.PROJECTNAME.frontend.dev/dev #profile
+                                                   {:dev true :prod false}
+                                                   PROJECTNAMESPACE.PROJECTNAME.frontend.dev/route
+                                                   #ref [:PROJECTNAMESPACE.PROJECTNAME.api/origin]}
+                                 :optimizations #profile {:dev :none
+                                                          :prod :advanced}
+                                 :devcards true}]
+                       :figwheel-config
+                       {:ring-server-options {:port 3737}
+                        :extra-main-files {:devcards {:main PROJECTNAMESPACE.PROJECTNAME.frontend.devcards.main}}}}}
+
+ :ig.system/base
+ {:juxt.crux.ig/system {:crux.node/topology [crux.standalone/topology]}
+  :PROJECTNAMESPACE.PROJECTNAME.api/aleph
+  {:port #profile {:prod 5000
+                   :test 7201
+                   :default 7200}
+   :handler #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api/ring}
+  :PROJECTNAMESPACE.PROJECTNAME.api/ring {:router #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api/router
+                                          :error-registry #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api/error-registry
+                                          :resource-root "public"}
+
+  :PROJECTNAMESPACE.PROJECTNAME.api.routes/routes {:middleware [:parameters
+                                                                :format-negotiate
+                                                                :format-response
+                                                                [:PROJECTNAMESPACE.PROJECTNAME-errors
+                                                                 #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api/error-registry]
+                                                                [:identity {:auth-method
+                                                                            #profile {:default nil
+                                                                                      :prod :cognito}}]
+                                                                :format-request
+                                                                :coerce-response
+                                                                :coerce-request
+                                                                :properties
+                                                                :deferred]
+                                                   :components {:node #ig/ref :juxt.crux.ig/system
+                                                                :secret "395609d0-621b-4f02-838a-a2353addbd9a"
+                                                                :error-registry
+                                                                #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api/error-registry
+                                                                :origin #ref [:PROJECTNAMESPACE.PROJECTNAME.api/origin]
+                                                                :event-bus #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api/event-bus}}
+  :PROJECTNAMESPACE.PROJECTNAME.api/router {:request-diffs :debug
+                                            :pretty-router-exceptions? true
+                                            :routes [#ig/ref :PROJECTNAMESPACE.PROJECTNAME.api.routes/routes]}
+  :PROJECTNAMESPACE.PROJECTNAME.api/error-registry {:registry-resource "errors.edn"}
+  :PROJECTNAMESPACE.PROJECTNAME.api/event-bus nil}
+
+ :ig.system/dev
+ {:edge.kick/builder #ref [:edge.kick/config]
+  :sass4clj.integrant/sass4clj
+  {:source-paths ["src/sass"]
+   :source-map true
+   :target-path "target/dev/public"}}
+
+ :ig/system #profile {:dev #merge [#ref [:ig.system/base]
+                                   #ref [:ig.system/dev]]
+                      :default #ref [:ig.system/base]}}

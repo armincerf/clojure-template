@@ -1,0 +1,6 @@
+-/target/*
+-/log/*
+-/resources/*
+-/node_modules
+-/dist
+-*.lock
