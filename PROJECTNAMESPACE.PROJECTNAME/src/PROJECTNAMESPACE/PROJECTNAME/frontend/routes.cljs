@@ -6,13 +6,14 @@
     :link-text "Home"
     :icon "fa-home"}
    {:path "/assets"
-    :icon "fa-balance-scale"
+    :icon "fa-briefcase"
     :name :assets
     :link-text "Assets"}
    {:path "/customers"
     :icon "fa-users"
     :name :customers
-    :link-text "Customers"}
+    :link-text "Customers"
+    :dispatch [:dashboard/customers-fetch]}
    {:path "/customers/:customer"
     :name :customer
     :link-text "Customers"}
@@ -27,11 +28,11 @@
     :link-text "Formats"}
    {:path "/features"
     :name :features
-    :link-text "Features"}])
+    :link-text "Features"}
+   {:path "/settings"
+    :name :settings}])
 
 (defonce routes
   ["/dashboard"
-   (for [{:keys [path name link-text]} dashboard-pages]
-     [path
-      {:name name
-       :link-text link-text}])])
+   (for [{:keys [path] :as page} dashboard-pages]
+     [path page])])

@@ -56,17 +56,10 @@
    (:user db)))
 
 (rf/reg-sub
- ::table-data-by-id
- (fn [db _]
-   (into {} (map (fn [x] {(:crux.db/id x) x}) (:data db)))))
-
-(rf/reg-sub
  ::alerts-table
- (fn [_ _]
-   [(rf/subscribe [:db])
-    (rf/subscribe [::table-data-by-id])])
- (fn [[db mappified-data] _]
-   (let [columns [{:column-key :dealership/name
+ (fn [db _]
+   (let [mappified-data (into {} (map (fn [x] {(:crux.db/id x) x}) (:data db)))
+         columns [{:column-key :dealership/name
                    :column-name "Dealership"
                    :render-fn
                    (fn [m v] (table-utils/link-component
@@ -112,4 +105,33 @@
                  :select {:dealership/name {:label "Dealership"}
                           :customer/name {:label "Customer"}
                           :alert/action {:label "Alert"}}}}
+      :sort {:alert/date :desc}})))
+
+(rf/reg-sub
+ ::customers-table
+ (fn [db _]
+   (let [columns [{:column-key :company
+                   :column-name "Company"}
+                  {:column-key :location
+                   :column-name "Location"}
+                  {:column-key :primary-contact
+                   :column-name "Primary Contact"}
+                  {:column-key :contract
+                   :column-name "Contract"}
+                  {:column-key :assets
+                   :column-name "Assets"
+                   :render-only #{:sort :filter}
+                   :render-fn (fn [row href]
+                                [:a.font-bold.text-decoration-none.color-secondary
+                                 {:href href}
+                                 "View Assets"])}]]
+     {:columns columns
+      :rows (get-in db [:data :customers])
+      :row-link {:href (fn [row] (:assets row))}
+      :filters [{:label "Company"
+                 :column-key :company}
+                {:label "Location"
+                 :column-key :location}
+                {:label "Primary Contact"
+                 :column-key :primary-contact}]
       :sort {:alert/date :desc}})))

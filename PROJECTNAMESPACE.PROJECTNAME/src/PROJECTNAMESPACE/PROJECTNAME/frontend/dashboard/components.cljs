@@ -120,8 +120,10 @@
            [:i.menu__icon.fas.fa-fw
             {:class icon}]
            [:span.text link-text]]])]]
-     [:div.settings
-      [:button.menu__settings
+     [:div.settings.menu__settings
+      [:a
+       {:href (common/route->url :settings)
+        :class (when (= current-page :settings) "active")}
        [:i.menu__icon.fas.fa-fw.fa-cog]]]
      [:div.close-nav
       {:on-click #(rf/dispatch [:menu-toggle])}

@@ -5,6 +5,9 @@
             [reagent.dom :as r]
             PROJECTNAMESPACE.PROJECTNAME.frontend.dev
             PROJECTNAMESPACE.PROJECTNAME.frontend.events
+            PROJECTNAMESPACE.PROJECTNAME.frontend.subscriptions
+            PROJECTNAMESPACE.PROJECTNAME.frontend.dashboard.events
+            PROJECTNAMESPACE.PROJECTNAME.frontend.dashboard.subscriptions
             PROJECTNAMESPACE.PROJECTNAME.frontend.http
             [PROJECTNAMESPACE.PROJECTNAME.frontend.navigation :as nav]
             [PROJECTNAMESPACE.PROJECTNAME.frontend.dashboard.views :as views]))

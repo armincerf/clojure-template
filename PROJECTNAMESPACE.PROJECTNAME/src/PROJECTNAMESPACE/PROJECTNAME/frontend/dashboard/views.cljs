@@ -2,7 +2,12 @@
   (:require
    [re-frame.core :as rf]
    [reagent.core :as r]
+   [PROJECTNAMESPACE.PROJECTNAME.frontend.global-messages :as messages]
+   [PROJECTNAMESPACE.PROJECTNAME.frontend.dashboard.homepage :as homepage]
    [PROJECTNAMESPACE.PROJECTNAME.frontend.dashboard.components :as components]
+   [PROJECTNAMESPACE.PROJECTNAME.frontend.dashboard.assets :as assets]
+   [PROJECTNAMESPACE.PROJECTNAME.frontend.dashboard.customers :as customers]
+   [PROJECTNAMESPACE.PROJECTNAME.frontend.dashboard.settings :as settings]
    [PROJECTNAMESPACE.PROJECTNAME.frontend.dashboard.subscriptions :as sub]
    [PROJECTNAMESPACE.PROJECTNAME.frontend.http :as http]))
 
@@ -22,6 +27,11 @@
                                    {:label "Breadcrumb2"}
                                    {:label "Breadcrumb Active"}]]]
           (case page
+            :homepage [homepage/page]
+            :assets [assets/page]
+            :customers [customers/page]
+            :settings [settings/page]
             [:p.font-italic
-             "User customisable dashboard with custom charts, alerts and summary tables."])]
-         [components/modal]]))))
+             (str "No content for page " page)])]
+         [components/modal]
+         [messages/toast]]))))

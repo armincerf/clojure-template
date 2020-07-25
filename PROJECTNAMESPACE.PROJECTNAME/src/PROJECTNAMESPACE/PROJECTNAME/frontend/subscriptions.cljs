@@ -1,4 +1,4 @@
-(ns PROJECTNAMESPACE.PROJECTNAME.frontend.dashboard.subscriptions
+(ns PROJECTNAMESPACE.PROJECTNAME.frontend.subscriptions
   (:require
    [PROJECTNAMESPACE.PROJECTNAME.frontend.table-utils :as table-utils]
    [re-frame.core :as rf]))
@@ -18,6 +18,10 @@
 (rf/reg-sub
  :show-menu?
  (fn [db _] (:show-menu? db)))
+
+(rf/reg-sub
+ :global-message
+ (fn [db _] (:global-message db)))
 
 (rf/reg-sub
  ::current-route

@@ -17,15 +17,18 @@
  (fn [_ [_ & route]]
    {::navigate! route}))
 
-(rf/reg-event-db
+(rf/reg-event-fx
  ::navigated
- (fn [db [_ new-match]]
+ (fn [{:keys [db]} [_ new-match]]
    (let [old-match (:current-route db)
          controllers (rfc/apply-controllers (:controllers old-match) new-match)]
-     (assoc db
-            :current-route
-            (assoc new-match :controllers controllers)
-            :show-menu? false))))
+     (merge
+      {:db (assoc db
+                  :current-route
+                  (assoc new-match :controllers controllers)
+                  :show-menu? false)}
+      (when-let [evt (:dispatch (:data new-match))]
+        {:dispatch evt})))))
 
 (defn on-navigate [new-match]
   (when new-match
