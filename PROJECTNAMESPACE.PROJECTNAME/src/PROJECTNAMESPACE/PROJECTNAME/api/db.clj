@@ -12,7 +12,7 @@
 
 (defn query
   [node query]
-  (crux/q (crux/db node) query))
+  (map first (crux/q (crux/db node) query)))
 
 (defn insert!
   "Inserts data into crux, data can be either a map or a sequence of maps.
@@ -57,6 +57,6 @@
 (defn entity-update
   [node entity-id new-attrs]
   (let [entity-prev-value (crux/entity (crux/db node) entity-id)]
-    (insert! crux (merge entity-prev-value new-attrs))))
+    (insert! node (merge entity-prev-value new-attrs))))
 
 

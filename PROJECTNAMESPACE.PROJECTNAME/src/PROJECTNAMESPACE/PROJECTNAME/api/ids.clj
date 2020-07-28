@@ -1,7 +1,7 @@
 (ns PROJECTNAMESPACE.PROJECTNAME.api.ids
   (:require [PROJECTNAMESPACE.PROJECTNAME.api.crypto :as crypto]))
 
-(defn- gen-id
+(defn gen-id
   "Generates an opaque keyword ID with a human readable prefix.
   Heavily inspired by https://stripe.com/docs/api
 
