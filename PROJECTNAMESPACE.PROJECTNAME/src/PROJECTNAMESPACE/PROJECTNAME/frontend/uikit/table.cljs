@@ -98,8 +98,9 @@
             columns))]))
 
 (defn loading-table
-  [data table-atom {:keys [rows cols]}]
-  (let [columns (:columns data)]
+  [data {:keys [rows cols]}]
+  (let [columns (:columns data)
+        table-atom (r/atom {:utils (dissoc data :columns :rows :filters)})]
     [:div.table__main
      [:table.table
       (if columns
@@ -123,23 +124,31 @@
   (let [columns (utils/table-columns data @table-atom)]
     (if (seq rows)
       [:tbody.table-body
-       (for [row rows]
-         ^{:key row}
-         [:tr.table__row
-          (when (:row-link data)
-            (let [href ((get-in data [:row-link :href]) row)]
-              {:class "cursor-pointer"
-               :on-click #(let [route-info (common/url->route href)
-                                name (get-in route-info [:data :name])
-                                path-params (get-in route-info [:path-params])
-                                query-params (get-in route-info [:query-params])]
-                            (rf/dispatch [:navigate name path-params query-params]))}))
-          (for [{:keys [column-key render-fn]} columns]
-            ^{:key (str row column-key)}
-            [:td.padding-sm
-             (if render-fn
-               (render-fn row (column-key row))
-               (column-key row))])])]
+       (if (:loading? data)
+         (for [n (range 10)]
+           ^{:key n}
+           [:tr.loading
+            (for [col columns]
+              ^{:key col}
+              [:td.td-loading-bar
+               [:span.loading-bar__span]])])
+         (for [row rows]
+           ^{:key row}
+           [:tr.table__row
+            (when (:row-link data)
+              (let [href ((get-in data [:row-link :href]) row)]
+                {:class "cursor-pointer"
+                 :on-click #(let [route-info (common/url->route href)
+                                  name (get-in route-info [:data :name])
+                                  path-params (get-in route-info [:path-params])
+                                  query-params (get-in route-info [:query-params])]
+                              (rf/dispatch [:navigate name path-params query-params]))}))
+            (for [{:keys [column-key render-fn]} columns]
+              ^{:key (str row column-key)}
+              [:td.padding-sm
+               (if render-fn
+                 (render-fn row (column-key row))
+                 (column-key row))])]))]
       [:tbody.table__body.table__no-data
        [:tr [:td.td__no-data
              "Nothing to show"]]])))
@@ -212,7 +221,6 @@
     (fn [data]
       (let [[processed-rows paginated-rows] (utils/process-rows data @table-atom)]
         [:div.uikit-table
-         #_[:pre (with-out-str (pprint/pprint @table-atom))]
          [table-filters data table-atom paginated-rows]
          [:div.table-container
           [:table.table

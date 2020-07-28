@@ -15,8 +15,12 @@
   (get-in req [:parameters :path :id]))
 
 (def customer-attrs
-  {:email ::spec/email
-   :id ids/customer?})
+  {:customer/email ::spec/email
+   :id ids/customer?
+   :name string?
+   :company string?
+   :location string?
+   :phone string?})
 
 (s/def :customer/active
   (ds/spec {:name :customer/active
@@ -43,6 +47,7 @@
 
 (defn all-customers-handler
   [{:keys [node]} _req]
+  (def node node)
   {:data (->> (customers.model/find-all node)
               (mapv external-view))})
 

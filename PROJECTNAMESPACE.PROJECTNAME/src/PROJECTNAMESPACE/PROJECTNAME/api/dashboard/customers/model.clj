@@ -4,8 +4,10 @@
 
 (defn find-all
   [node]
+  (def node node)
   (db/query node '{:find [?e]
-                 :where [[?e :customer/email]]}))
+                   :where [[?e :customer/email]]
+                   :full-results? true}))
 
 (dfs/defn find-by-id
   [node customer-id :- :customer/id]

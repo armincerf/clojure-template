@@ -24,6 +24,10 @@
  (fn [db _] (:global-message db)))
 
 (rf/reg-sub
+ :loading?
+ (fn [db _] (:loading? db)))
+
+(rf/reg-sub
  ::current-route
  (fn [db _]
    (:current-route db)))

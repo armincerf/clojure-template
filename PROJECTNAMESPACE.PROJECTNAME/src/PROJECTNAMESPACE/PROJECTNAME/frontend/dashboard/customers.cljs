@@ -9,9 +9,10 @@
   []
   (let [checkbox (r/atom nil)]
     (fn []
-      (let [page-title @(rf/subscribe [::sub/page-title])]
+      (let [page-title @(rf/subscribe [::sub/page-title])
+            table-data @(rf/subscribe [::sub/customers-table])]
         [:<>
          [:h1.text-lg
           page-title]
          [:div.component-card
-          [table/table @(rf/subscribe [::sub/customers-table])]]]))))
+          [table/table table-data]]]))))

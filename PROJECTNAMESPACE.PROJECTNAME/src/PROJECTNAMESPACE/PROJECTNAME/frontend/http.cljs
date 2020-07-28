@@ -1,15 +1,16 @@
 (ns PROJECTNAMESPACE.PROJECTNAME.frontend.http
   (:require [PROJECTNAMESPACE.PROJECTNAME.frontend.ajax :as ajax]
+            [PROJECTNAMESPACE.PROJECTNAME.frontend.global-messages
+             :as message]
             [clojure.walk :as walk]
             [re-frame.core :as rf]))
 
 (rf/reg-event-fx
  :generic-failure
- (fn [{:keys [db]} [_ result]]
-   (js/console.error "Failed to load something" (:response result))
-   {:db (-> db
-            (assoc :loading? false)
-            (assoc :errors (:response result)))}))
+ (fn [{:keys [db]} [_ evt result]]
+   (js/console.error (str "Failed to load " (name evt)) result)
+   {:dispatch [:global-message/add (message/error response)]
+    :db (assoc db :loading? false)}))
 
 (rf/reg-event-fx
  ::me
@@ -25,10 +26,10 @@
 
 (rf/reg-event-fx
  ::fetch-data
- (fn [_ _]
+ (fn [_ [evt]]
    (ajax/get-request "/api/data"
                      [:fetch-data/success]
-                     [:generic-failure])))
+                     [:generic-failure evt])))
 
 (rf/reg-event-db
  :fetch-data/success

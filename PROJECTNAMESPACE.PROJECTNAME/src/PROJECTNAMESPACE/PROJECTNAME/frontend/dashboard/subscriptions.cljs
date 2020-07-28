@@ -110,14 +110,14 @@
 (rf/reg-sub
  ::customers-table
  (fn [db _]
-   (let [columns [{:column-key :company
+   (let [columns [{:column-key :name
+                   :column-name "Customer Name"}
+                  {:column-key :company
                    :column-name "Company"}
                   {:column-key :location
                    :column-name "Location"}
-                  {:column-key :primary-contact
+                  {:column-key :customer/email
                    :column-name "Primary Contact"}
-                  {:column-key :contract
-                   :column-name "Contract"}
                   {:column-key :assets
                    :column-name "Assets"
                    :render-only #{:sort :filter}
@@ -125,13 +125,14 @@
                                 [:a.font-bold.text-decoration-none.color-secondary
                                  {:href href}
                                  "View Assets"])}]]
-     {:columns columns
-      :rows (get-in db [:data :customers])
+     {:loading? (:loading? db)
+      :columns columns
+      :rows (get-in db [:data :dashboard/customers])
       :row-link {:href (fn [row] (:assets row))}
       :filters [{:label "Company"
                  :column-key :company}
                 {:label "Location"
                  :column-key :location}
                 {:label "Primary Contact"
-                 :column-key :primary-contact}]
+                 :column-key :customer/email}]
       :sort {:alert/date :desc}})))
