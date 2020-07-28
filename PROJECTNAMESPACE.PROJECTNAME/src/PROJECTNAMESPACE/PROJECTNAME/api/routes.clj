@@ -4,6 +4,7 @@
             [hiccup.page :as hiccup]
             [integrant.core :as ig]
             [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.routes :as dashboard.routes]
+            [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.customers.routes :as customers.routes]
             [reitit.ring :as ring]
             [ring.util.http-response :as response]
             [PROJECTNAMESPACE.PROJECTNAME.api.spec :as spec]
@@ -42,9 +43,7 @@
       :or {middleware []}}]
   (let [{:keys [node]} components]
     ["/" {:middleware middleware}
-
-     dashboard.routes/routes
-
+     (dashboard.routes/routes components)
      ["devcards" {:name :cljs-devcards
                   :get {:handler (fn handle-devcards
                                    [req]
@@ -57,7 +56,9 @@
      ["events"
       {:get {:handler #(sse/sse-handler components %)
              :no-diffs true}}]
-     ["api/"
+     ["api/v1/"
+      (customers.routes/routes components)
+
       ["me"
        {:name ::me
         :get {:responses {200 {:name ::spec/non-blank-string}}

@@ -25,16 +25,17 @@
                        "/js/util.js"
                        "/js/scripts.min.js")]))
 
-(def routes
+(defn routes
+  [components]
   ["dashboard"
    ;; TODO is there a better way to allow both /dashboard and /dashboard/* in reitit??
    [""  {:name :dashboard-cljs-routes-root
-         :get {:handler (fn handle-index
+         :get {:handler (fn handle-root-index
                           [req]
                           (-> (response/ok (index-html req))
                               (response/content-type "text/html")))}}]
    ["/*" {:name :dashboard-cljs-routes
-                   :get {:handler (fn handle-index
-                                    [req]
-                                    (-> (response/ok (index-html req))
-                                        (response/content-type "text/html")))}}]])
+          :get {:handler (fn handle-index
+                           [req]
+                           (-> (response/ok (index-html req))
+                               (response/content-type "text/html")))}}]])

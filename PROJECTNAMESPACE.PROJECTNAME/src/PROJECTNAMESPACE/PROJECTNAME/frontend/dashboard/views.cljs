@@ -1,7 +1,6 @@
 (ns PROJECTNAMESPACE.PROJECTNAME.frontend.dashboard.views
   (:require
    [re-frame.core :as rf]
-   [reagent.core :as r]
    [PROJECTNAMESPACE.PROJECTNAME.frontend.global-messages :as messages]
    [PROJECTNAMESPACE.PROJECTNAME.frontend.dashboard.homepage :as homepage]
    [PROJECTNAMESPACE.PROJECTNAME.frontend.dashboard.components :as components]
@@ -15,23 +14,22 @@
   []
   ;;TODO this belongs in the route structure
   (rf/dispatch [::http/fetch-data])
-  (let [modal-state (r/atom nil)]
-    (fn []
-      (let [page @(rf/subscribe [::sub/page])]
-        [:<>
-         [components/header page]
-         [components/nav page]
-         [:div.page-content
-          [:div.breadcrumb--mobile
-           [components/breadcrumb [{:label "Breadcrumb1"}
-                                   {:label "Breadcrumb2"}
-                                   {:label "Breadcrumb Active"}]]]
-          (case page
-            :homepage [homepage/page]
-            :assets [assets/page]
-            :customers [customers/page]
-            :settings [settings/page]
-            [:p.font-italic
-             (str "No content for page " page)])]
-         [components/modal]
-         [messages/toast]]))))
+  (fn []
+    (let [page @(rf/subscribe [::sub/page])]
+      [:<>
+       [components/header page]
+       [components/nav page]
+       [:div.page-content
+        [:div.breadcrumb--mobile
+         [components/breadcrumb [{:label "Breadcrumb1"}
+                                 {:label "Breadcrumb2"}
+                                 {:label "Breadcrumb Active"}]]]
+        (case page
+          :homepage [homepage/page]
+          :assets [assets/page]
+          :customers [customers/page]
+          :settings [settings/page]
+          [:p.font-italic
+           (str "No content for page " page)])]
+       [components/modal]
+       [messages/toast]])))
