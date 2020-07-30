@@ -1,6 +1,9 @@
 (ns PROJECTNAMESPACE.PROJECTNAME.frontend.dashboard.subscriptions
   (:require
+   [reitit.frontend.easy :as reitit]
+   [medley.core :as medley]
    [PROJECTNAMESPACE.PROJECTNAME.frontend.table-utils :as table-utils]
+   [PROJECTNAMESPACE.PROJECTNAME.common :as common]
    [re-frame.core :as rf]))
 
 (rf/reg-sub
@@ -58,7 +61,7 @@
 (rf/reg-sub
  ::alerts-table
  (fn [db _]
-   (let [mappified-data (into {} (map (fn [x] {(:crux.db/id x) x}) (:data db)))
+   (let [mappified-data (into {} (map (fn [x] {(:id x) x}) (:data db)))
          columns [{:column-key :dealership/name
                    :column-name "Dealership"
                    :render-fn
@@ -116,15 +119,16 @@
                    :column-name "Company"}
                   {:column-key :location
                    :column-name "Location"}
-                  {:column-key :customer/email
+                  {:column-key :email
                    :column-name "Primary Contact"}
-                  {:column-key :assets
-                   :column-name "Assets"
+                  {:column-key :id
+                   :column-name "Profile"
                    :render-only #{:sort :filter}
-                   :render-fn (fn [row href]
+                   :render-fn (fn [row id]
                                 [:a.font-bold.text-decoration-none.color-secondary
-                                 {:href href}
-                                 "View Assets"])}]]
+                                 {:href (reitit/href :customer {:customer
+                                                                (name (keyword id))})}
+                                 "View Profile"])}]]
      {:loading? (:loading? db)
       :columns columns
       :rows (get-in db [:data :dashboard/customers])
@@ -134,5 +138,16 @@
                 {:label "Location"
                  :column-key :location}
                 {:label "Primary Contact"
-                 :column-key :customer/email}]
+                 :column-key :email}]
       :sort {:alert/date :desc}})))
+
+(defn find-data-by-id
+  [db k id]
+  (let [data (get-in db [:data k])]
+    (medley/find-first #(= id (name (keyword (:id %)))) data)))
+
+(rf/reg-sub
+ ::customer-profile
+ (fn [db _]
+   (let [id (get-in db [:current-route :path-params :customer])]
+     (find-data-by-id db :dashboard/customers id))))

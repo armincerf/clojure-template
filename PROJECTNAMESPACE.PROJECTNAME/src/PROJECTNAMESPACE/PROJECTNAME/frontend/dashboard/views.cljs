@@ -28,6 +28,7 @@
           :homepage [homepage/page]
           :assets [assets/page]
           :customers [customers/page]
+          :customer [customers/profile]
           :settings [settings/page]
           [:p.font-italic
            (str "No content for page " page)])]

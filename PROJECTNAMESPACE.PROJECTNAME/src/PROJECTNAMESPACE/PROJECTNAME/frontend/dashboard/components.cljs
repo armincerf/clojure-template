@@ -111,11 +111,12 @@
      [logo true]
      [:div.menu
       [:ul
-       (for [{:keys [link-text name disabled? icon]}
+       (for [{:keys [link-text name disabled? icon children]}
              (filter :icon routes/dashboard-pages)]
          ^{:key link-text}
          [:li
-          {:class (when (= current-page name) "active")}
+          {:class (when (or (= current-page name)
+                            ((set children) current-page)) "active")}
           [:a {:href (when name (common/route->url name))}
            [:i.menu__icon.fas.fa-fw
             {:class icon}]

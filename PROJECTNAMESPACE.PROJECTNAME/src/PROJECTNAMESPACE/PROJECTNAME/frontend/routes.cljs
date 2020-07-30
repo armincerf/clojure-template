@@ -12,11 +12,12 @@
    {:path "/customers"
     :icon "fa-users"
     :name :customers
+    :children [:customer]
     :link-text "Customers"
     :dispatch [:dashboard/customers-fetch]}
    {:path "/customers/:customer"
     :name :customer
-    :link-text "Customers"}
+    :link-text "Customer Profile"}
    {:path "/customers/:customer/assets/:asset"
     :name :customer-asset
     :link-text "Asset"}

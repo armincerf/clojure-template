@@ -8,6 +8,7 @@
             [spec-tools.core :as st]
             [spec-tools.data-spec :as ds]
             [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.customers.model :as customers.model]
+            [PROJECTNAMESPACE.PROJECTNAME.common :as common]
             [PROJECTNAMESPACE.PROJECTNAME.api.ids :as ids]
             [PROJECTNAMESPACE.PROJECTNAME.api.spec :as spec]))
 
@@ -15,7 +16,7 @@
   (get-in req [:parameters :path :id]))
 
 (def customer-attrs
-  {:customer/email ::spec/email
+  {:email ::spec/email
    :id ids/customer?
    :name string?
    :company string?
@@ -49,6 +50,7 @@
   [{:keys [node]} _req]
   (def node node)
   {:data (->> (customers.model/find-all node)
+              (mapv common/prep-map)
               (mapv external-view))})
 
 (defn customer-by-id-handler
