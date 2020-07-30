@@ -1,8 +1,8 @@
-const host = "localhost:7200"
-const home = host + "/ui"
+const host = "localhost:5001"
+const home = host + "/dashboard"
 describe('Tables show data', () => {
-    it('Dealerships page shows data', () => {
-        cy.visit(home + '/dealerships')
+    it('Customers page shows data', () => {
+        cy.visit(home + '/customers')
         cy.get('.table__row > :nth-child(1)').should('be.visible')
     })
 
