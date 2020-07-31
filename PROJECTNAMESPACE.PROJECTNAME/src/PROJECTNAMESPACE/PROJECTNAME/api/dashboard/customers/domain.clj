@@ -13,7 +13,8 @@
             [PROJECTNAMESPACE.PROJECTNAME.api.spec :as spec]))
 
 (defn customer-id [req]
-  (get-in req [:parameters :path :id]))
+  (when-let [id (get-in req [:path-params :id])]
+    (keyword "cust" id)))
 
 (def customer-attrs
   {:email ::spec/email
@@ -55,13 +56,17 @@
 
 (defn customer-by-id-handler
   [req]
-  {:data (-> req
-             :properties
-             :data
-             external-view)})
+  {:data (-> req :properties :data external-view)})
+
+(defn update-customer-handler
+  [{:keys [node]} req]
+  (def req req)
+  (let [id (customer-id req)]
+    (customers.model/update-by-id node id (:body-params req))
+    (ok {:data {:id id :active false :new (customers.model/find-by-id node id)}})))
 
 (defn delete-customer-handler
   [{:keys [node]} req]
   (let [id (customer-id req)]
-    (customers.model/delete-by-id node (customer-id req))
+    (customers.model/delete-by-id node id)
     (ok {:data {:id id :active false}})))

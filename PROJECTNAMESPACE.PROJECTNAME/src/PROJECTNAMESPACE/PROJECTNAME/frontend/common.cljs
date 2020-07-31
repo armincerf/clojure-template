@@ -3,6 +3,7 @@
             [fork.re-frame :as fork]
             [clojure.string :as str]
             [PROJECTNAMESPACE.PROJECTNAME.common :as common]
+            [re-frame.core :as rf]
             [reitit.frontend :as reitit]
             [reitit.frontend.easy :as rfe]))
 
@@ -56,6 +57,7 @@
               :form-id "form-id"
               :prevent-default? true
               :clean-on-unmount? true
+              :on-submit #(rf/dispatch [:data/update %])
               :initial-values (medley.core/map-keys name editable-fields)}
    (fn [{:keys [values
                 form-id

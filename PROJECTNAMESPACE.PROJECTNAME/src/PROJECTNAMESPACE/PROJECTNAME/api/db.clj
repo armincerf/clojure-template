@@ -49,10 +49,10 @@
       (recur
        node
        (ffirst
-        (crux.api/q node
-                    {:find ['?e]
-                     :where [['?e index value]]}))))
-    (crux.api/entity node eid)))
+        (crux/q node
+                {:find ['?e]
+                 :where [['?e index value]]}))))
+    (crux/entity (crux/db node) eid)))
 
 (defn entity-update
   [node entity-id new-attrs]

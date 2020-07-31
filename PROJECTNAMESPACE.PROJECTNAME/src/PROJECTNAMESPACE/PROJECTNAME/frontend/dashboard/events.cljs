@@ -44,3 +44,14 @@
  :global-message/dismiss
  (fn [db _]
    (dissoc db :global-message)))
+
+(rf/reg-event-fx
+ :data/update
+ (fn [{:keys [db]} [_ {:keys [values]}]]
+   (assoc
+    ;;TODO don't hardcode URL or data-fetch location
+    (ajax/put-request (str "/api/v1/customers/" (get-in db [:current-route :path-params :customer]))
+                      (medley/map-keys keyword values)
+                      [:dashboard/customers-fetch]
+                      [:generic-failure])
+    :db (assoc db :loading? true))))

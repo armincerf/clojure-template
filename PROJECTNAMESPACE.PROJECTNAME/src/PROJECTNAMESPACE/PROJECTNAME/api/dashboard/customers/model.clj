@@ -16,3 +16,9 @@
 (dfs/defn delete-by-id
   [node customer-id :- :customer/id]
   (db/delete-by-id node [customer-id]))
+
+(dfs/defn update-by-id
+  [node
+   customer-id :- :customer/id
+   data :- :customer/ext]
+  (db/entity-update node customer-id data))

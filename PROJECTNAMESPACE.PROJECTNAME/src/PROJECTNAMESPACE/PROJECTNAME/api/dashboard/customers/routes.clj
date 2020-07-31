@@ -1,6 +1,7 @@
 (ns PROJECTNAMESPACE.PROJECTNAME.api.dashboard.customers.routes
   (:require [clojure.spec.alpha :as s]
             [ring.util.http-response :refer [ok]]
+            [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.customers.model :as customers.model]
             [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.customers.domain :as customers.domain]))
 
 (defn routes
@@ -14,12 +15,18 @@
        :handler (fn [req] (ok (customers.domain/all-customers-handler components req)))}}]
     ["/:id"
      {:name ::customer-resource
-      :properties (fn [req] (customers.domain/all-customers-handler components req))
-      :parameters {:path {:id :customer/id}}
+      :properties (fn [req] (customers.model/find-by-id (:node components)
+                                                        (customers.domain/customer-id req)))
+      :parameters {:path {:id string?}}
       :get
       {:summary "Retrieve a customer"
        :responses {200 {:body :customer/ext}}
        :handler (fn [req] (ok (customers.domain/customer-by-id-handler req)))}
+      :put
+      {:summary "Update a customer"
+       :responses {200 {:body :customer/ext}}
+       :parameters {:body :customer/ext}
+       :handler (fn [req] (ok (customers.domain/update-customer-handler components req)))}
       :delete
       {:summary "Delete a customer"
        :responses {200 {:body :customer/inactive}}
