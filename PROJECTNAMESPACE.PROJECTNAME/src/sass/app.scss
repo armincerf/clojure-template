@@ -1121,3 +1121,64 @@ a {
 .toast__header {
     font-weight: bold;
 }
+
+.select {
+    position: absolute;
+    white-space: nowrap;
+    overflow: auto;
+    max-width: 400px;
+    max-height: 300px;
+    margin-top: var(--space-xxs);
+    z-index: 5;
+    line-height: 1;
+    box-shadow: var(--shadow-xs);
+    background: var(--color-white);
+    border-radius: var(--btn-radius, 0.25em);
+
+    &--show {
+        display: block;
+    }
+
+    &--hide {
+        display: none;
+    }
+
+}
+
+.option {
+    cursor: pointer;
+    padding-top: var(--btn-padding-y, 0.5em);
+    padding-bottom: var(--btn-padding-y, 0.5em);
+    padding-left: var(--btn-padding-x, 0.75em);
+    padding-right: var(--btn-padding-x, 0.75em);
+
+    &:hover {
+        background: var(--color-contrast-low);
+    }
+}
+
+.form {
+    &__label {
+        color: var(--color-secondary);
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: var(--text-sm);
+        margin-bottom: var(--space-xs);
+    }
+
+    .form-control {
+        width: 100%
+    }
+
+    &__submit {
+        margin-top: var(--space-md);
+        font-weight: bold;
+        background: var(--color-success);
+        color: white;
+    }
+}
+
+.profile-component__form {
+    max-width: 300px;
+    width: 100%;
+}

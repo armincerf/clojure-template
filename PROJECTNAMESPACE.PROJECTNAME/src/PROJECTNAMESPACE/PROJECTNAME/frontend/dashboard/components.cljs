@@ -103,6 +103,32 @@
       [:i.fas.fa-bars
        {:on-click #(rf/dispatch [:menu-toggle])}]]]]])
 
+(defn select
+  [component & [args]]
+  (let [!ref-button (atom nil)
+        !ref-items (atom nil)
+        active? (r/atom false)
+        handler (fn [e]
+                  (let [^js node (.-target e)]
+                    (if (.contains @!ref-button node)
+                      (swap! active? not)
+                      (reset! active? false))))
+        ref-button (fn [el] (reset! !ref-button el))
+        ref-items (fn [el] (reset! !ref-items el))]
+    (r/create-class
+     {:component-did-mount
+      (fn []
+        (js/document.addEventListener "mouseup" handler))
+      :component-will-unmount
+      (fn []
+        (js/document.removeEventListener "mouseup" handler))
+      :reagent-render
+      (fn [component]
+        [component {:active? @active?
+                    :ref-button ref-button
+                    :ref-items ref-items
+                    :args args}])})))
+
 (defn nav
   [current-page]
   (let [show-menu? @(rf/subscribe [:show-menu?])]

@@ -58,6 +58,7 @@
            com.bhauman/figwheel-main {:mvn/version "0.2.9"}
            reagent {:mvn/version "0.10.0"}
            re-frame {:mvn/version "0.12.0"}
+           fork {:mvn/version "2.1.0"}
            re-pressed {:mvn/version "0.3.1"}
            devcards {:mvn/version "0.2.7"}
            day8.re-frame/http-fx {:mvn/version "v0.2.0"}
