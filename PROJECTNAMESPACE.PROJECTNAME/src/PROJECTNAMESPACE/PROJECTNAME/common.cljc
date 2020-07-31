@@ -19,3 +19,12 @@
                              (assoc acc (remove-kw-ns k) v)) {} form)
                           form))]
     (walk/postwalk transform-map data)))
+
+(defn id-key
+  "Takes a namespaced keyword (or stringified ns keyword) and returns a string of
+  the keyword with the namespace removed. E.g :foo/bar becomes 'bar'"
+  [id]
+  (some-> id
+          str
+          keyword
+          name))

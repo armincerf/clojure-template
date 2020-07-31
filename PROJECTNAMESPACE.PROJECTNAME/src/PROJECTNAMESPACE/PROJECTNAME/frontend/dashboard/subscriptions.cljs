@@ -126,13 +126,11 @@
                    :render-only #{:sort :filter}
                    :render-fn (fn [row id]
                                 [:a.font-bold.text-decoration-none.color-secondary
-                                 {:href (reitit/href :customer {:customer
-                                                                (name (keyword id))})}
                                  "View Profile"])}]]
      {:loading? (:loading? db)
       :columns columns
       :rows (get-in db [:data :dashboard/customers])
-      :row-link {:href (fn [row] (:assets row))}
+      :row-link {:href (fn [row] (reitit/href :customer {:customer (common/id-key (:id row))}))}
       :filters [{:label "Company"
                  :column-key :company}
                 {:label "Location"

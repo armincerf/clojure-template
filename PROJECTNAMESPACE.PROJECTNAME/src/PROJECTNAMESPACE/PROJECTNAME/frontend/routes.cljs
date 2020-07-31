@@ -17,7 +17,8 @@
     :dispatch [:dashboard/customers-fetch]}
    {:path "/customers/:customer"
     :name :customer
-    :link-text "Customer Profile"}
+    :link-text "Customer Profile"
+    :dispatch [:dashboard/customers-fetch]}
    {:path "/customers/:customer/assets/:asset"
     :name :customer-asset
     :link-text "Asset"}

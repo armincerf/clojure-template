@@ -23,4 +23,5 @@
         editable-fields (dissoc customer :id)]
     [:section.profile
      [:h1 (:name customer) "'s Profile"]
-     [frontend.common/auto-form editable-fields]]))
+     (when (seq customer)
+       [frontend.common/auto-form editable-fields])]))
