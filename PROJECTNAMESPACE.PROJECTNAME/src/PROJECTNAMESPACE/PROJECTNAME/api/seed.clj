@@ -7,6 +7,7 @@
             [clojure.java.io :as io]
             [PROJECTNAMESPACE.PROJECTNAME.api.db :as db]
             [PROJECTNAMESPACE.PROJECTNAME.api.ids :as ids]
+            [medley.core :as medley]
             [clojure.string :as str]))
 
 (s/def ::seed-file-directory string?)
@@ -14,6 +15,14 @@
 (defmethod ig/pre-init-spec :PROJECTNAMESPACE.PROJECTNAME.api/seed
   [_]
   (spell/keys :req-un [::seed-file-directory]))
+
+(defn- namespace-keywords
+  "Given a map, add the given namespace to all non namespaced keywords"
+  [obj ns]
+  (medley/map-keys
+   #(when (nil? (namespace %))
+      (keyword ns (name %)))
+   obj))
 
 (defmethod ig/init-key :PROJECTNAMESPACE.PROJECTNAME.api/seed
   [_ {:keys [node seed-file-directory]}]
@@ -33,10 +42,14 @@
                                               (str/split #"\.")
                                               first)]]
                        (merge
-                        doc
+                        (namespace-keywords doc doc-type)
                         {:crux.db/id (ids/gen-id doc-type)}
                         (case doc-type
-                          "cust" {:customer/email (str (str/replace (:name doc) #" |'" "-") "@fakemail.com")}
+                          "customer" {:customer/email
+                                      (-> doc
+                                          :name
+                                          (str/replace #" |'" "-")
+                                          (str "@fakemail.com"))}
                           nil)))))]
     (db/insert! node documents)))
 

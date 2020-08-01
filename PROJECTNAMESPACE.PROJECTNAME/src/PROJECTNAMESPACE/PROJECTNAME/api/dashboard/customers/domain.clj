@@ -14,7 +14,7 @@
 
 (defn customer-id [req]
   (when-let [id (get-in req [:path-params :id])]
-    (keyword "cust" id)))
+    (keyword "customer" id)))
 
 (def customer-attrs
   {:email ::spec/email

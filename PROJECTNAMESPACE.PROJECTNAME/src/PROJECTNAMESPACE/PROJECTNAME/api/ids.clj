@@ -26,7 +26,7 @@
 ;; Prefixes - short, unique string prepended to each id.
 
 (def prefixes
-  {:customer "cust"
+  {:customer "customer"
    :asset "asset"})
 
 (defn customer [] (gen-id (:customer prefixes)))
