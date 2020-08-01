@@ -7,12 +7,17 @@
 (defn delete-by-id
   "Delete documents associated with given crux ids"
   [node crux-ids]
-  (crux/submit-tx node (for [crux-id crux-ids]
-                      [:crux.tx/delete crux-id])))
+  (crux/submit-tx
+   node
+   (for [crux-id crux-ids]
+     [:crux.tx/delete crux-id])))
 
 (defn query
   [node query]
-  (map first (crux/q (crux/db node) query)))
+  (let [result (crux/q (crux/db node) query)]
+    (if (= 1 (count (:find query)))
+      (map first result)
+      result)))
 
 (defn insert!
   "Inserts data into crux, data can be either a map or a sequence of maps.
@@ -44,15 +49,16 @@
   (when-not (or (vector? eid)
                 (s/valid? :crux.db/id eid))
     (errors/exception :db/invalid-lookup {:eid eid}))
-  (if (vector? eid)
-    (let [[index value] eid]
-      (recur
-       node
-       (ffirst
-        (crux/q node
-                {:find ['?e]
-                 :where [['?e index value]]}))))
-    (crux/entity (crux/db node) eid)))
+  (let [db (crux/db node)]
+    (if (vector? eid)
+      (let [[index value] eid]
+        (recur
+         node
+         (ffirst
+          (crux/q db
+                  {:find ['?e]
+                   :where [['?e index value]]}))))
+      (crux/entity db eid))))
 
 (defn entity-update
   [node entity-id new-attrs]
