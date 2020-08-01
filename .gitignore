@@ -4,6 +4,7 @@
 **/target/*/**
 **/log/*
 !**/target/*/.gitkeep
+**/data
 
 # pack'd output
 /*.jar
