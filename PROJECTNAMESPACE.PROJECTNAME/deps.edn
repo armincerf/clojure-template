@@ -4,6 +4,7 @@
   juxt.edge/lib.app {:local/root "../lib/edge.app"}
 
   juxt.crux/ig {:local/root "../lib/crux.ig"}
+  juxt/crux-rocksdb {:mvn/version "20.07-1.10.0-beta"}
   tick {:mvn/version "0.4.23-alpha"}
   metosin/reitit {:mvn/version "0.4.2"}
 
