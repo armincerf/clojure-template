@@ -115,10 +115,6 @@
  (fn [db _]
    (let [columns [{:column-key :name
                    :column-name "Customer Name"}
-                  {:column-key :company
-                   :column-name "Company"}
-                  {:column-key :location
-                   :column-name "Location"}
                   {:column-key :email
                    :column-name "Primary Contact"}
                   {:column-key :id
@@ -131,11 +127,9 @@
       :columns columns
       :rows (get-in db [:data :dashboard/customers])
       :row-link {:href (fn [row] (reitit/href :customer {:customer (common/id-key (:id row))}))}
-      :filters [{:label "Company"
-                 :column-key :company}
-                {:label "Location"
-                 :column-key :location}
-                {:label "Primary Contact"
+      :filters [{:label "Name"
+                 :column-key :name}
+                {:label "Email"
                  :column-key :email}]
       :sort {:alert/date :desc}})))
 
