@@ -12,8 +12,6 @@
 
 (defn views
   []
-  ;;TODO this belongs in the route structure
-  (rf/dispatch [::http/fetch-data])
   (fn []
     (let [page @(rf/subscribe [::sub/page])]
       [:<>

@@ -8,14 +8,14 @@
 (rf/reg-event-fx
  :generic-failure
  (fn [{:keys [db]} [_ evt result]]
-   (js/console.error (str "Failed to load " (name evt)) result)
-   {:dispatch [:global-message/add (message/error response)]
+   (js/console.error (str "Failed to load " evt) result)
+   {:dispatch [:global-message/add (message/error result)]
     :db (assoc db :loading? false)}))
 
 (rf/reg-event-fx
  ::me
  (fn [_ _]
-   (ajax/get-request "/api/me"
+   (ajax/get-request "/api/v1/me"
                      [:me/success]
                      [:generic-failure])))
 
@@ -23,18 +23,6 @@
  :me/success
  (fn [db [_ result]]
    (assoc db :user result)))
-
-(rf/reg-event-fx
- ::fetch-data
- (fn [_ [evt]]
-   (ajax/get-request "/api/data"
-                     [:fetch-data/success]
-                     [:generic-failure evt])))
-
-(rf/reg-event-db
- :fetch-data/success
- (fn [db [_ result]]
-   (assoc db :data (walk/keywordize-keys result))))
 
 ;;SSE
 
