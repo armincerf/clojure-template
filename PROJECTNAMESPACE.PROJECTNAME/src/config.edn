@@ -28,10 +28,13 @@
 
  :ig.system/base
  {:juxt.crux.ig/system {:crux.node/topology [crux.standalone/topology
-                                              crux.kv.rocksdb/kv-store]
+                                             crux.kv.rocksdb/kv-store
+                                             crux.http-server/module]
                         :crux.standalone/event-log-kv-store crux.kv.rocksdb/kv
-                        :crux.standalone/event-log-dir "data/eventlog"
-                        :crux.kv/db-dir "data/db-dir"}
+                        :crux.standalone/event-log-dir #profile {:dev "data/eventlog"
+                                                                 :test "data/test-eventlog"}
+                        :crux.kv/db-dir #profile {:dev "data/db-dir"
+                                                  :test "data/test-db-dir"}}
   :PROJECTNAMESPACE.PROJECTNAME.api/aleph
   {:port #profile {:prod 5000
                    :test 5002
