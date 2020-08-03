@@ -23,12 +23,12 @@
         loading? @(rf/subscribe [:loading?])
         editable-fields (dissoc customer :id)]
     (cond
-      loading?
-      [common/loading-component "Loading Profile"]
       customer
       [:section.profile
        [:h1 (:customer/name customer) "'s Profile"]
        (when (seq customer)
          [frontend.common/auto-form editable-fields {:collection-name "customers"}])]
+      loading?
+      [common/loading-component "Loading Profile"]
       :else
       [:p "No customer found with that ID"])))

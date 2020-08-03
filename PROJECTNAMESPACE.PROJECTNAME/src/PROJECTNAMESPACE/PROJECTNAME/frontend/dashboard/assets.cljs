@@ -95,8 +95,6 @@
         loading? @(rf/subscribe [:loading?])
         editable-fields (dissoc asset :id)]
     (cond
-      loading?
-      [common/loading-component "Loading Profile"]
       asset
       [:section.profile
        [:h1 (:asset/name asset)]
@@ -106,5 +104,7 @@
            :custom-components
            {:asset/type type-select-box
             :asset/customer customer-select-box}}])]
+      loading?
+      [common/loading-component "Loading Profile"]
       :else
       [:p "No asset found with that ID"])))

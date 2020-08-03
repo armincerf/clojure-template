@@ -124,7 +124,7 @@
   (let [columns (utils/table-columns data @table-atom)]
     (if (seq rows)
       [:tbody.table-body
-       (if (:loading? data)
+       (if (and (not (seq rows)) (:loading? data))
          (for [n (range 10)]
            ^{:key n}
            [:tr.loading
