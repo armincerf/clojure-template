@@ -1,6 +1,7 @@
 (ns PROJECTNAMESPACE.test.utils
   (:require [integrant.core :as ig]
             [reitit.core :as r]
+            [clojure.tools.logging :as log]
             [PROJECTNAMESPACE.PROJECTNAME.api.fixtures :as f :refer [*system*]]))
 
 (defn system-lookup
@@ -59,6 +60,7 @@
                        {:route-name route
                         :path-params (get request :path-params)
                         :template (:template match)})))
+     (log/info "requesting")
      (-> request
          merge-params
          (update :scheme #(or % :https))

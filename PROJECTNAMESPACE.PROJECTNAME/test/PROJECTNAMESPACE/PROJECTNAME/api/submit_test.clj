@@ -8,5 +8,6 @@
 
 (t/deftest sample-test
   (t/testing "api request"
-    (let [resp (utils/request-to ::routes/me {:request-method :get})]
-      (t/is (utils/submap? {:status 401} resp)))))
+    (let [resp (utils/request-to ::routes/me2 {:request-method :get
+                                               :headers {"Content-Type" "application/json"}})]
+      (t/is (utils/submap? {:status 200} resp)))))

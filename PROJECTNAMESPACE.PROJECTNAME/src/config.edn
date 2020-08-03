@@ -46,19 +46,31 @@
    :resource-root "public"}
 
   :PROJECTNAMESPACE.PROJECTNAME.api.routes/routes
-  {:middleware [:parameters
-                :format-negotiate
-                :format-response
-                [:PROJECTNAMESPACE.PROJECTNAME-errors
-                 #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api/error-registry]
-                [:identity {:auth-method
-                            #profile {:default nil
-                                      :prod :cognito}}]
-                :format-request
-                :coerce-response
-                :coerce-request
-                :properties
-                :deferred]
+  {:middleware #profile {:test [:parameters
+                                :format-negotiate
+                                [:PROJECTNAMESPACE.PROJECTNAME-errors
+                                 #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api/error-registry]
+                                [:identity {:auth-method
+                                            #profile {:default nil
+                                                      :prod :cognito}}]
+                                :format-request
+                                :coerce-response
+                                :coerce-request
+                                :properties
+                                :deferred]
+                         :default [:parameters
+                                   :format-negotiate
+                                   :format-response
+                                   [:PROJECTNAMESPACE.PROJECTNAME-errors
+                                    #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api/error-registry]
+                                   [:identity {:auth-method
+                                               #profile {:default nil
+                                                         :prod :cognito}}]
+                                   :format-request
+                                   :coerce-response
+                                   :coerce-request
+                                   :properties
+                                   :deferred]}
    :components {:node #ig/ref :juxt.crux.ig/system
                 :secret "395609d0-621b-4f02-838a-a2353addbd9a"
                 :error-registry
