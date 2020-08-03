@@ -8,9 +8,8 @@
    {:http-xhrio
     (cond-> {:uri uri
              :method method
-             :format (ajax/json-request-format)
-             :response-format (ajax/json-response-format
-                               {:keywords? true})
+             :format (ajax/transit-request-format)
+             :response-format (ajax/transit-response-format)
              :on-success on-success
              :on-failure on-error}
       params (assoc :params params))}))

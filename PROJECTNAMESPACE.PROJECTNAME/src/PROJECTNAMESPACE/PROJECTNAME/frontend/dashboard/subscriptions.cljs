@@ -59,63 +59,11 @@
    (:user db)))
 
 (rf/reg-sub
- ::alerts-table
- (fn [db _]
-   (let [mappified-data (into {} (map (fn [x] {(:id x) x}) (:data db)))
-         columns [{:column-key :dealership/name
-                   :column-name "Dealership"
-                   :render-fn
-                   (fn [m v] (table-utils/link-component
-                              (str "/dashboard/dealership/" (:dealership/id m)) v))
-                   :render-only #{:filter :sort}}
-                  {:column-key :customer/name
-                   :column-name "Customer"
-                   :render-fn
-                   (fn [m v] (table-utils/link-component
-                              (str "/dashboard/dealership/" (:dealership/id m)
-                                   "/customer/" (:customer/id m)) v))
-                   :render-only #{:filter :sort}}
-                  {:column-key :alert/action
-                   :column-name "Type"
-                   :render-fn table-utils/icon-component
-                   :render-only #{:filter :sort}}
-                  {:column-key :alert/date
-                   :column-name "Date"
-                   :render-fn table-utils/date-component
-                   :render-only #{:sort}}]
-         alerts (filter #(= "alert" (:PROJECTNAMESPACE/type %)) (:data db))
-         rows (map (fn [alert]
-                     (let [logical-device-id (:createdBy alert)
-                           logical-device (get mappified-data logical-device-id)
-                           logical-gateway-id (:logicalGateway logical-device)
-                           logical-gateway (get mappified-data logical-gateway-id)
-                           customer-id (:customer logical-gateway)
-                           customer (get mappified-data customer-id)
-                           dealership-id (:servicedByDealership customer)
-                           dealership (get mappified-data dealership-id)]
-                       {:alert/id (:crux.db/id alert)
-                        :alert/date (:date alert)
-                        :alert/action (:action alert)
-                        :dealership/name (:name dealership)
-                        :customer/name (:name customer)
-                        :dealership/id (:crux.db/id dealership)
-                        :customer/id (:crux.db/id customer)}))
-                   alerts)]
-     {:columns columns
-      :rows rows
-      :filters {:left
-                {:input {:alert/date {:label "Date"}}
-                 :select {:dealership/name {:label "Dealership"}
-                          :customer/name {:label "Customer"}
-                          :alert/action {:label "Alert"}}}}
-      :sort {:alert/date :desc}})))
-
-(rf/reg-sub
  ::customers-table
  (fn [db _]
-   (let [columns [{:column-key :name
+   (let [columns [{:column-key :customer/name
                    :column-name "Customer Name"}
-                  {:column-key :email
+                  {:column-key :customer/email
                    :column-name "Primary Contact"}
                   {:column-key :id
                    :column-name "Profile"
@@ -128,9 +76,9 @@
       :rows (get-in db [:data :dashboard/customers])
       :row-link {:href (fn [row] (reitit/href :customer {:customer (common/id-key (:id row))}))}
       :filters [{:label "Name"
-                 :column-key :name}
+                 :column-key :customer/name}
                 {:label "Email"
-                 :column-key :email}]
+                 :column-key :customer/email}]
       :sort {:alert/date :desc}})))
 
 (defn find-data-by-id

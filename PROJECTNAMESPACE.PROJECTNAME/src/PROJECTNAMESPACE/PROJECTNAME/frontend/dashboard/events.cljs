@@ -30,7 +30,7 @@
                                      :body [:div.notification__body
                                             [:i.fa.fa-exclamation-circle.notification__icon]
                                             [:div.notification-body__text
-                                             [:p.boldunderline (:asset-name alert)]
+                                             [:p.boldunderline (:asset/name alert)]
                                              [:p (:company-name alert)]]]}}]}))
 
 (rf/reg-event-fx

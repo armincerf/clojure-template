@@ -58,7 +58,9 @@
               :prevent-default? true
               :clean-on-unmount? true
               :on-submit #(rf/dispatch [:data/update %])
-              :initial-values (medley.core/map-keys name editable-fields)}
+              :initial-values (medley.core/map-keys
+                               common/keyword->string
+                               editable-fields)}
    (fn [{:keys [values
                 form-id
                 handle-change
@@ -70,7 +72,7 @@
       [:form.profile-component__form
        {:id form-id
         :on-submit handle-submit}
-       (for [input (map name (keys editable-fields))]
+       (for [input (map common/keyword->string (keys editable-fields))]
          ^{:key input}
          [:div.margin-bottom-sm
           [:label.form-label.form__label
