@@ -7,9 +7,12 @@
 
 (rf/reg-event-fx
  :generic-failure
- (fn [{:keys [db]} [_ evt result]]
-   (js/console.error (str "Failed to load " evt) result)
-   {:dispatch [:global-message/add (message/error result)]
+ (fn [{:keys [db]} [_ evt]]
+   (js/console.error (str "Failed to load " evt))
+   {:dispatch [:global-message/add (message/error
+                                    (get-in
+                                     evt
+                                     [:response :error_message]))]
     :db (assoc db :loading? false)}))
 
 (rf/reg-event-fx

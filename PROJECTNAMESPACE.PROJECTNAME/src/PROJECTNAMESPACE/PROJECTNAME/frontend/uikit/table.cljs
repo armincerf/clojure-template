@@ -219,11 +219,14 @@
   [data]
   (let [table-atom (r/atom {:utils (dissoc data :columns :rows :filters)})]
     (fn [data]
-      (let [[processed-rows paginated-rows] (utils/process-rows data @table-atom)]
-        [:div.uikit-table
-         [table-filters data table-atom paginated-rows]
-         [:div.table-container
-          [:table.table
-           [header-columns data table-atom]
-           [body-rows data table-atom paginated-rows]]]
-         [pagination table-atom processed-rows]]))))
+      (let [[processed-rows paginated-rows] (utils/process-rows data @table-atom)
+            debug? @(rf/subscribe [:debug?])]
+        [:<>
+         (when debug? [:div "Debug on (ctrl+del to turn off): Keys available = " (str (keys (first (:rows data))))])
+         [:div.uikit-table
+          [table-filters data table-atom paginated-rows]
+          [:div.table-container
+           [:table.table
+            [header-columns data table-atom]
+            [body-rows data table-atom paginated-rows]]]
+          [pagination table-atom processed-rows]]]))))

@@ -23,8 +23,11 @@
                          :message "Unable to process request due to an internal system issue."
                          :status 500}
  :PROJECTNAMESPACE/invalid-message {:type :invalid-request
-                        :message "Received invalid request"
-                        :status 400}
+                                    :message "Received invalid request"
+                                    :status 400}
  :PROJECTNAMESPACE/bad-secret {:type :invalid-request
-                   :message "Missing or Incorrect shared secret. Body: {body}"
-                   :status 401}}
+                               :message "Missing or Incorrect shared secret. Body: {body}"
+                               :status 401}
+ :PROJECTNAMESPACE/customer-not-found {:type :invalid-request
+                                       :message "A customer with the id {id} was not found in the database."
+                                       :status 400}}

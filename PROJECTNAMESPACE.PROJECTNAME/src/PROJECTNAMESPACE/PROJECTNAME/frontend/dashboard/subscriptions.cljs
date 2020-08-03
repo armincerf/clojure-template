@@ -6,6 +6,11 @@
    [PROJECTNAMESPACE.PROJECTNAME.common :as common]
    [re-frame.core :as rf]))
 
+(defn- find-data-by-id
+  [db k id]
+  (let [data (get-in db [:data k])]
+    (medley/find-first #(= id (name (keyword (:id %)))) data)))
+
 (rf/reg-sub
  :db
  (fn [db _] db))
@@ -59,6 +64,56 @@
    (:user db)))
 
 (rf/reg-sub
+ ::assets-table
+ (fn [db _]
+   (let [columns [{:column-key :asset/name
+                   :column-name "Asset Name"}
+                  {:column-key :asset/description
+                   :column-name "Asset Description"}
+                  {:column-key :asset/type
+                   :column-name "Asset Type"}
+                  {:column-key :asset/customer
+                   :column-name "Asset Customer"
+                   :render-fn (fn [row id]
+                                [:a.font-bold.color-secondary
+                                 {:href (reitit/href
+                                         :customer
+                                         {:customer (common/id-key id)})}
+                                 (or (:customer/name
+                                      (common/find-by-id
+                                       (get-in db [:data :dashboard/customers])
+                                       id))
+                                     "View Customer")])}
+                  {:column-key :id
+                   :column-name "Profile"
+                   :render-only #{:sort :filter}
+                   :render-fn (fn [row id]
+                                [:a.font-bold.color-secondary
+                                 "View Asset"])}]]
+     {:loading? (:loading? db)
+      :columns columns
+      :rows (get-in db [:data :dashboard/assets])
+      :row-link {:href (fn [row] (reitit/href :asset {:asset (common/id-key (:id row))}))}
+      :filters [{:label "Name"
+                 :column-key :asset/name}
+                {:label "Type"
+                 :column-key :asset/type}
+                {:label "Customer"
+                 :column-key :asset/customer}]
+      :sort {:alert/date :desc}})))
+
+(rf/reg-sub
+ ::asset-profile
+ (fn [db _]
+   (let [id (get-in db [:current-route :path-params :asset])]
+     (find-data-by-id db :dashboard/assets id))))
+
+(rf/reg-sub
+ :dashboard/data
+ (fn [db [_ key]]
+   (get-in db [:data key])))
+
+(rf/reg-sub
  ::customers-table
  (fn [db _]
    (let [columns [{:column-key :customer/name
@@ -81,13 +136,9 @@
                  :column-key :customer/email}]
       :sort {:alert/date :desc}})))
 
-(defn find-data-by-id
-  [db k id]
-  (let [data (get-in db [:data k])]
-    (medley/find-first #(= id (name (keyword (:id %)))) data)))
-
 (rf/reg-sub
  ::customer-profile
- (fn [db _]
-   (let [id (get-in db [:current-route :path-params :customer])]
+ (fn [db [_ id]]
+   (let [id (or (common/id-key id)
+                (get-in db [:current-route :path-params :customer]))]
      (find-data-by-id db :dashboard/customers id))))

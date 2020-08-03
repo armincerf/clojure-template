@@ -52,12 +52,12 @@
                        timeout))))))
 
 (defn auto-form
-  [editable-fields]
+  [editable-fields {:keys [collection-name custom-components]}]
   [fork/form {:path :form
-              :form-id "form-id"
+              :form-id collection-name
               :prevent-default? true
               :clean-on-unmount? true
-              :on-submit #(rf/dispatch [:data/update %])
+              :on-submit #(rf/dispatch [:data/update % collection-name])
               :initial-values (medley.core/map-keys
                                common/keyword->string
                                editable-fields)}
@@ -67,24 +67,27 @@
                 handle-blur
                 submitting?
                 handle-submit
-                reset]}]
+                reset] :as props}]
      [:div.form
       [:form.profile-component__form
        {:id form-id
         :on-submit handle-submit}
-       (for [input (map common/keyword->string (keys editable-fields))]
+       (for [input (map common/keyword->string (keys editable-fields))
+             :let [value (get values input)]]
          ^{:key input}
          [:div.margin-bottom-sm
           [:label.form-label.form__label
-           (str/capitalize input)]
+           (str/capitalize (common/id-key input))]
           [:div.form-control-wrapper
-           [:input.form-control
-            {:type "text"
-             :name input
-             :value (values input)
-             :on-change handle-change
-             :on-blur handle-blur}]]])
+           (if-let [component (get custom-components (keyword input))]
+             [component props]
+             [:input.form-control
+              {:type "text"
+               :name input
+               :value value
+               :on-change handle-change
+               :on-blur handle-blur}])]])
        [:button.btn.btn--md.form__submit
         {:type "submit"
          :disabled submitting?}
-        "Submit Form"]]])])
+        "Submit"]]])])

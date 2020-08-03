@@ -29,6 +29,6 @@
       [:section.profile
        [:h1 (:customer/name customer) "'s Profile"]
        (when (seq customer)
-         [frontend.common/auto-form editable-fields])]
+         [frontend.common/auto-form editable-fields {:collection-name "customers"}])]
       :else
       [:p "No customer found with that ID"])))

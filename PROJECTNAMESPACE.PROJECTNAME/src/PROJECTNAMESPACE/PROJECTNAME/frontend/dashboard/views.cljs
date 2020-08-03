@@ -25,6 +25,7 @@
         (case page
           :homepage [homepage/page]
           :assets [assets/page]
+          :asset [assets/profile]
           :customers [customers/page]
           :customer [customers/profile]
           :settings [settings/page]

@@ -3,7 +3,8 @@
             [clojure.string :as string]
             [re-frame.core :as rf]
             [PROJECTNAMESPACE.PROJECTNAME.frontend.ajax :as ajax]
-            [medley.core :as medley]))
+            [medley.core :as medley]
+            [clojure.string :as str]))
 
 (rf/reg-event-fx
  :dashboard/data-fetch-success
@@ -13,13 +14,14 @@
             (assoc :loading? false))}))
 
 (rf/reg-event-fx
- :dashboard/customers-fetch
- (fn [{:keys [db]} _]
-   (assoc
-    (ajax/get-request "/api/v1/customers"
-                      [:dashboard/data-fetch-success :dashboard/customers]
-                      [:generic-failure])
-    :db (assoc db :loading? true))))
+ :dashboard/data-fetch
+ (fn [{:keys [db]} [_ url]]
+   (let [key (subs url (inc (str/last-index-of url "/")))]
+     (assoc
+      (ajax/get-request url
+                        [:dashboard/data-fetch-success (keyword "dashboard" key)]
+                        [:generic-failure])
+      :db (assoc db :loading? true)))))
 
 (rf/reg-event-fx
  :alert-notification/add
@@ -47,11 +49,11 @@
 
 (rf/reg-event-fx
  :data/update
- (fn [{:keys [db]} [_ {:keys [values]}]]
-   (assoc
-    ;;TODO don't hardcode URL or data-fetch location
-    (ajax/put-request (str "/api/v1/customers/" (get-in db [:current-route :path-params :customer]))
-                      (medley/map-keys keyword values)
-                      [:dashboard/customers-fetch]
-                      [:generic-failure])
-    :db (assoc db :loading? true))))
+ (fn [{:keys [db]} [_ {:keys [values]} collection-name]]
+   (let [data-url (str "/api/v1/" collection-name)]
+     (assoc
+      (ajax/put-request (str data-url "/" (first (vals (get-in db [:current-route :path-params]))))
+                        (medley/map-keys keyword values)
+                        [:dashboard/data-fetch data-url]
+                        [:generic-failure])
+      :db (assoc db :loading? true)))))

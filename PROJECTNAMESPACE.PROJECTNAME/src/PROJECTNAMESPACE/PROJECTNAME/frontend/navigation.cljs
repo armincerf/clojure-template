@@ -27,6 +27,8 @@
                   :current-route
                   (assoc new-match :controllers controllers)
                   :show-menu? false)}
+      (when-let [evts (:dispatch-n (:data new-match))]
+        {:dispatch-n evts})
       (when-let [evt (:dispatch (:data new-match))]
         {:dispatch evt})))))
 

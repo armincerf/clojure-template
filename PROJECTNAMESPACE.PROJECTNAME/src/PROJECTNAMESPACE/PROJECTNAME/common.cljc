@@ -1,6 +1,7 @@
 (ns PROJECTNAMESPACE.PROJECTNAME.common
   (:require [clojure.walk :as walk]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [medley.core :as medley]))
 
 (defn remove-kw-ns
   [k]
@@ -47,3 +48,8 @@
      [:div.fill-loader__bar
       [:div.fill-loader__base]
       [:div.fill-loader__fill.fill-loader__fill--3rd]]]]])
+
+(defn find-by-id
+  "Given a list of maps, find the first map where the :id key equals the given id"
+  [data id]
+  (medley/find-first #(= id (:id %)) data))
