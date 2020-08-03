@@ -135,20 +135,16 @@
          (for [row rows]
            ^{:key row}
            [:tr.table__row
-            (when (:row-link data)
-              (let [href ((get-in data [:row-link :href]) row)]
-                {:class "cursor-pointer"
-                 :on-click #(let [route-info (common/url->route href)
-                                  name (get-in route-info [:data :name])
-                                  path-params (get-in route-info [:path-params])
-                                  query-params (get-in route-info [:query-params])]
-                              (rf/dispatch [:navigate name path-params query-params]))}))
-            (for [{:keys [column-key render-fn]} columns]
+            (for [{:keys [column-key render-fn row-link]} columns]
               ^{:key (str row column-key)}
-              [:td.padding-sm
-               (if render-fn
-                 (render-fn row (column-key row))
-                 (column-key row))])]))]
+              [:td
+               [:a.padding-sm.row-link
+                (when-let [href-fn (:href (or row-link (:row-link data)))]
+                  {:class "cursor-pointer"
+                   :href (href-fn row)})
+                (if render-fn
+                  (render-fn row (column-key row))
+                  (column-key row))]])]))]
       [:tbody.table__body.table__no-data
        [:tr [:td.td__no-data
              "Nothing to show"]]])))

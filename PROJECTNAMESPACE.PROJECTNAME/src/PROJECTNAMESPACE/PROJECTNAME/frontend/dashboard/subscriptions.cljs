@@ -66,7 +66,8 @@
 (rf/reg-sub
  ::assets-table
  (fn [db _]
-   (let [columns [{:column-key :asset/name
+   (let [customers (get-in db [:data :dashboard/customers])
+         columns [{:column-key :asset/name
                    :column-name "Asset Name"}
                   {:column-key :asset/description
                    :column-name "Asset Description"}
@@ -74,15 +75,17 @@
                    :column-name "Asset Type"}
                   {:column-key :asset/customer
                    :column-name "Asset Customer"
+                   :row-link {:href (fn [row]
+                                      (reitit/href
+                                       :customer
+                                       {:customer (common/id-key (:id row))}))}
                    :render-fn (fn [row id]
                                 [:a.font-bold.color-secondary
                                  {:href (reitit/href
                                          :customer
                                          {:customer (common/id-key id)})}
                                  (or (:customer/name
-                                      (common/find-by-id
-                                       (get-in db [:data :dashboard/customers])
-                                       id))
+                                      (common/find-by-id customers id))
                                      "View Customer")])}
                   {:column-key :id
                    :column-name "Profile"
@@ -90,7 +93,7 @@
                    :render-fn (fn [row id]
                                 [:a.font-bold.color-secondary
                                  "View Asset"])}]]
-     {:loading? (:loading? db)
+     {:loading? (and (:loading? db) (not (seq customers)))
       :columns columns
       :rows (get-in db [:data :dashboard/assets])
       :row-link {:href (fn [row] (reitit/href :asset {:asset (common/id-key (:id row))}))}

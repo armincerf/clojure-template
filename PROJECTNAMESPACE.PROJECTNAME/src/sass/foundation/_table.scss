@@ -120,6 +120,12 @@ $spacing: 0.5rem;
 
     .table__row {
 	      border-bottom: 1px solid var(--color-contrast-low);
+        a.row-link {
+            color: black;
+            text-decoration: none;
+            width: 100%;
+            display: block;
+        }
     }
 
     .table__row:hover {
