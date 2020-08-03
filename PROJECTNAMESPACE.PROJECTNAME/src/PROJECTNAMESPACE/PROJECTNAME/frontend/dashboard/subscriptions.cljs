@@ -77,13 +77,10 @@
                    :column-name "Asset Customer"
                    :row-link {:href (fn [row]
                                       (reitit/href
-                                       :customer
-                                       {:customer (common/id-key (:id row))}))}
+                                       :dashboard/customer
+                                       {:customer (common/id-key (:asset/customer row))}))}
                    :render-fn (fn [row id]
-                                [:a.font-bold.color-secondary
-                                 {:href (reitit/href
-                                         :customer
-                                         {:customer (common/id-key id)})}
+                                [:p.font-bold.color-secondary.underline
                                  (or (:customer/name
                                       (common/find-by-id customers id))
                                      "View Customer")])}
@@ -97,7 +94,7 @@
       :columns columns
       :rows (get-in db [:data :dashboard/assets])
       :row-link {:href (fn [row] (reitit/href
-                                  :asset {:asset (common/id-key (:id row))}))}
+                                  :dashboard/asset {:asset (common/id-key (:id row))}))}
       :filters [{:label "Name"
                  :column-key :asset/name}
                 {:label "Type"
@@ -133,7 +130,8 @@
      {:loading? (:loading? db)
       :columns columns
       :rows (get-in db [:data :dashboard/customers])
-      :row-link {:href (fn [row] (reitit/href :customer {:customer (common/id-key (:id row))}))}
+      :row-link {:href (fn [row] (reitit/href :dashboard/customer
+                                              {:customer (common/id-key (:id row))}))}
       :filters [{:label "Name"
                  :column-key :customer/name}
                 {:label "Email"

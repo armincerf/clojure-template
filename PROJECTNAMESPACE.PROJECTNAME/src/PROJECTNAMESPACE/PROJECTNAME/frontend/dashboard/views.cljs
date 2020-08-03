@@ -23,12 +23,12 @@
                                  {:label "Breadcrumb2"}
                                  {:label "Breadcrumb Active"}]]]
         (case page
-          :homepage [homepage/page]
-          :assets [assets/page]
-          :asset [assets/profile]
-          :customers [customers/page]
-          :customer [customers/profile]
-          :settings [settings/page]
+          :dashboard/homepage [homepage/page]
+          :dashboard/assets [assets/page]
+          :dashboard/asset [assets/profile]
+          :dashboard/customers [customers/page]
+          :dashboard/customer [customers/profile]
+          :dashboard/settings [settings/page]
           [:p.font-italic
            (str "No content for page " page)])]
        [components/modal]

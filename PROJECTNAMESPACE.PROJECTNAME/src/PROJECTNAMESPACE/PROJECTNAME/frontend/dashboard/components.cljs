@@ -8,19 +8,6 @@
    [reagent.core :as r]
    [re-frame.core :as rf]))
 
-(defn pprint-str
-  [x]
-  (with-out-str (pprint/pprint x)))
-
-(defn pprint-code
-  "If the app is running in dev environment, renders a pretty printed
-  representation of the given object"
-  [x]
-  (when @(rf/subscribe [:debug?])
-  [:code
-   {:style {:text-align "left"}}
-   [:pre (pprint-str x)]]))
-
 (defn modal-container
   [{:keys [child title state]}]
   [:div.modal-wrapper
@@ -45,10 +32,10 @@
                      (.preventDefault event)
                      (.stopPropagation event)))}]]
     [:div.modal__box-body
-     [pprint-code {:key "value"
-                   :nested {:foo "bar"
-                            :nested {:foo "bar"
-                                     :nested {:foo "bar"}}}}]]
+     [common/pprint-code {:key "value"
+                          :nested {:foo "bar"
+                                   :nested {:foo "bar"
+                                            :nested {:foo "bar"}}}}]]
     [:div.modal__box-footer]]])
 
 (defn modal
@@ -149,7 +136,7 @@
            [:span.text link-text]]])]]
      [:div.settings.menu__settings
       [:a
-       {:href (common/route->url :settings)
+       {:href (common/route->url :dashboard/settings)
         :class (when (= current-page :settings) "active")}
        [:i.menu__icon.fas.fa-fw.fa-cog]]]
      [:div.close-nav

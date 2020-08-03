@@ -2,43 +2,52 @@
 
 (def dashboard-pages
   [{:path "/"
-    :name :homepage
+    :name :dashboard/homepage
     :link-text "Home"
     :icon "fa-home"}
    {:path "/assets"
     :icon "fa-briefcase"
-    :name :assets
+    :name :dashboard/assets
     :link-text "Assets"
     :dispatch-n [[:dashboard/data-fetch "/api/v1/assets"]
                  [:dashboard/data-fetch "/api/v1/customers"]]}
    {:path "/customers"
     :icon "fa-users"
-    :name :customers
+    :name :dashboard/customers
     :children [:customer]
     :link-text "Customers"
     :dispatch [:dashboard/data-fetch "/api/v1/customers"]}
    {:path "/customers/:customer"
-    :name :customer
+    :name :dashboard/customer
     :link-text "Customer Profile"
     :dispatch [:dashboard/data-fetch "/api/v1/customers"]}
    {:path "/customers/:customer/assets/:asset"
-    :name :customer-asset
+    :name :dashboard/customer-asset
     :link-text "Asset"}
    {:path "/assets/:asset"
-    :name :asset
+    :name :dashboard/asset
     :link-text "Assets"
     :dispatch-n [[:dashboard/data-fetch "/api/v1/assets"]
                  [:dashboard/data-fetch "/api/v1/customers"]]}
    {:path "/formats"
-    :name :formats
+    :name :dashboard/formats
     :link-text "Formats"}
    {:path "/features"
-    :name :features
+    :name :dashboard/features
     :link-text "Features"}
    {:path "/settings"
-    :name :settings}])
+    :name :dashboard/settings}])
+
+(def app-pages
+  [{:path "/"
+    :name :app/homepage
+    :link-text "Home"}])
 
 (defonce routes
-  ["/dashboard"
-   (for [{:keys [path] :as page} dashboard-pages]
-     [path page])])
+  ["/"
+   ["app"
+    (for [{:keys [path] :as page} app-pages]
+      [path page])]
+   ["dashboard"
+    (for [{:keys [path] :as page} dashboard-pages]
+      [path page])]])

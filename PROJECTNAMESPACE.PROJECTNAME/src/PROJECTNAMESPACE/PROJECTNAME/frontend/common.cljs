@@ -91,3 +91,16 @@
         {:type "submit"
          :disabled submitting?}
         "Submit"]]])])
+
+(defn pprint-str
+  [x]
+  (with-out-str (pprint/pprint x)))
+
+(defn pprint-code
+  "If the app is running in dev environment, renders a pretty printed
+  representation of the given object"
+  [x]
+  (when @(rf/subscribe [:debug?])
+    [:code
+     {:style {:text-align "left"}}
+     [:pre (pprint-str x)]]))
