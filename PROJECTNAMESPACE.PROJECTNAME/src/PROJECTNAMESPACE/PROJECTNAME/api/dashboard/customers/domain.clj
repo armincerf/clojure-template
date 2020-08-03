@@ -17,41 +17,34 @@
     (keyword "customer" id)))
 
 (def customer-attrs
-  {:email ::spec/email
+  {:customer/email ::spec/email
    :id ids/customer?
-   :name string?
-   :company string?
-   :location string?
-   :phone string?})
+   :customer/name string?
+   :customer/company string?
+   :customer/location string?
+   :customer/phone string?})
 
-(s/def :customer/active
-  (ds/spec {:name :customer/active
-            :spec (merge customer-attrs {:active true?})}))
-
-(s/def :customer/inactive
-  (ds/spec {:name :customer/inactive
-            :spec (merge customer-attrs {:active false?})}))
+(s/def ::customer-ext
+  (ds/spec {:name ::customer-ext
+            :spec customer-attrs}))
 
 (s/def :customer/ext
-  (st/spec {:swagger/example {:email "example@email.com"
-                              :active true
-                              :partner-user-id 23
+  (st/spec {:swagger/example {:customer/email "example@email.com"
+                              :customer/name "bob"
+                              :customer/company "ACME"
+                              :customer/location "123 City of Town"
+                              :customer/phone "012345679"
                               :id "cust231"}
-            :spec (s/or
-                   :active :customer/active
-                   :inactive :customer/inactive)}))
+            :spec ::customer-ext}))
 
 (defn external-view
   [customer]
-  (if (:active customer)
-    (st/select-spec :customer/active customer)
-    (st/select-spec :customer/inactive customer)))
+  (st/select-spec :customer/ext (common/add-external-id customer)))
 
 (defn all-customers-handler
   [{:keys [node]} _req]
   (def node node)
   {:data (->> (customers.model/find-all node)
-              (mapv common/prep-map)
               (mapv external-view))})
 
 (defn customer-by-id-handler
@@ -63,7 +56,7 @@
   (def req req)
   (let [id (customer-id req)]
     (customers.model/update-by-id node id (:body-params req))
-    (ok {:data {:id id :active false :new (customers.model/find-by-id node id)}})))
+    (ok {:data {:id id :new (external-view (customers.model/find-by-id node id))}})))
 
 (defn delete-customer-handler
   [{:keys [node]} req]

@@ -47,10 +47,10 @@
               {:crux.db/id (ids/gen-id doc-type)}
               (case doc-type
                 "customer" {:customer/email
-                            (-> doc
-                                :name
-                                (str/replace #" |'" "-")
-                                (str "@fakemail.com"))}
+                            (some-> doc
+                                    :name
+                                    (str/replace #" |'" "-")
+                                    (str "@fakemail.com"))}
                 nil)))))
         customers (filter
                    #(ids/customer? (:crux.db/id %))
@@ -68,5 +68,6 @@
            :asset/name "User defined name for data"
            :asset/description "User defined description for data, could potentially be
            quite long although probably not."})]
+    (db/drop-db! node)
     (db/insert! node (concat documents-from-seed-files assets))))
 

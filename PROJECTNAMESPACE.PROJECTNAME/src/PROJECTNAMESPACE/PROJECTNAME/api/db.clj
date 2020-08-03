@@ -26,7 +26,6 @@
   false by default"
   ([system data] (insert! system data false))
   ([system data async?]
-   (log/info "inserting " data)
    (if (seq data)
      (do (crux/submit-tx
           system
@@ -63,6 +62,19 @@
 (defn entity-update
   [node entity-id new-attrs]
   (let [entity-prev-value (crux/entity (crux/db node) entity-id)]
+    (log/info "inserting " (merge entity-prev-value new-attrs))
     (insert! node (merge entity-prev-value new-attrs))))
 
+(defn all-ids
+  [node]
+  (query node '{:find [?e]
+                :where [[?e :crux.db/id]]}))
 
+(defn drop-db!
+  "WARNING deletes every item in the db. Although as this doesn't use evict the
+  data will still exist in the history."
+  [node]
+  (crux/submit-tx
+   node
+   (for [id (all-ids node)]
+     [:crux.tx/delete id])))

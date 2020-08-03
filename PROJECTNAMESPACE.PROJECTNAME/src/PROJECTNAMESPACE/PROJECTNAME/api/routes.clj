@@ -5,6 +5,7 @@
             [integrant.core :as ig]
             [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.routes :as dashboard.routes]
             [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.customers.routes :as customers.routes]
+            [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.assets.routes :as assets.routes]
             [reitit.ring :as ring]
             [ring.util.http-response :as response]
             [PROJECTNAMESPACE.PROJECTNAME.api.spec :as spec]
@@ -58,6 +59,7 @@
              :no-diffs true}}]
      ["api/v1/"
       (customers.routes/routes components)
+      (assets.routes/routes components)
 
       ["me"
        {:name ::me

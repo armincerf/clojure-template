@@ -33,3 +33,7 @@
 
 (def email-regex #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$")
 (s/def ::email (s/and string? #(re-matches email-regex %)))
+
+(s/def ::asset-type
+  (st/spec {:description "Type of asset, e.g phone number, email address etc"
+            :spec #{:email :phone :password}}))

@@ -40,10 +40,6 @@
      :headers {"Content-Type" "text/event-stream"}
      :body outstream}))
 
-(defn fetch-alerts!
-  [event-bus]
-  (publish-global-event event-bus {:message :PROJECTNAMESPACE.PROJECTNAME.frontend.http/fetch-data}))
-
 (comment
   (require '[dev-extras])
   (def bus (:PROJECTNAMESPACE.PROJECTNAME.api/event-bus dev-extras/system))
