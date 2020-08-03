@@ -1,9 +1,10 @@
-(ns PROJECTNAMESPACE.PROJECTNAME.frontend.dashboard.components
+(ns PROJECTNAMESPACE.PROJECTNAME.frontend.app.components
   (:require
    [PROJECTNAMESPACE.PROJECTNAME.frontend.routes :as routes]
    [PROJECTNAMESPACE.PROJECTNAME.frontend.common :as common]
-   [PROJECTNAMESPACE.PROJECTNAME.frontend.dashboard.subscriptions :as sub]
+   [PROJECTNAMESPACE.PROJECTNAME.frontend.app.subscriptions :as sub]
    [clojure.string :as str]
+   [clojure.pprint :as pprint]
    [reagent.core :as r]
    [re-frame.core :as rf]))
 

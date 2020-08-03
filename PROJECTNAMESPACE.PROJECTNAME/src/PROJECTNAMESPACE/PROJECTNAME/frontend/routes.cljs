@@ -39,7 +39,7 @@
     :name :dashboard/settings}])
 
 (def app-pages
-  [{:path "/"
+  [{:path ""
     :name :app/homepage
     :link-text "Home"}])
 

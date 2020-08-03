@@ -3,6 +3,7 @@
             [crux.api :as crux]
             [hiccup.page :as hiccup]
             [integrant.core :as ig]
+            [PROJECTNAMESPACE.PROJECTNAME.api.app.routes :as app.routes]
             [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.routes :as dashboard.routes]
             [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.customers.routes :as customers.routes]
             [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.assets.routes :as assets.routes]
@@ -45,6 +46,7 @@
   (let [{:keys [node]} components]
     ["/" {:middleware middleware}
      (dashboard.routes/routes components)
+     (app.routes/routes components)
      ["devcards" {:name :cljs-devcards
                   :get {:handler (fn handle-devcards
                                    [req]

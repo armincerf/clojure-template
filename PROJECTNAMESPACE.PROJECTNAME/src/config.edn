@@ -21,6 +21,20 @@
                                                    #ref [:PROJECTNAMESPACE.PROJECTNAME.api/origin]}
                                  :optimizations #profile {:dev :none
                                                           :prod :advanced}
+                                 :devcards true}
+                                {:id "app"
+                                 :main PROJECTNAMESPACE.PROJECTNAME.frontend.app.main
+                                 :output-to "public/app.js"
+                                 :output-dir "public/app.out"
+                                 :asset-path "/app.out"
+                                 :clean-outputs true
+                                 :open-url false
+                                 :closure-defines {PROJECTNAMESPACE.PROJECTNAME.frontend.dev/dev #profile
+                                                   {:dev true :prod false}
+                                                   PROJECTNAMESPACE.PROJECTNAME.frontend.dev/route
+                                                   #ref [:PROJECTNAMESPACE.PROJECTNAME.api/origin]}
+                                 :optimizations #profile {:dev :none
+                                                          :prod :advanced}
                                  :devcards true}]
                        :figwheel-config
                        {:ring-server-options {:port 2451}

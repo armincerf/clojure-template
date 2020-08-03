@@ -1,6 +1,7 @@
 (ns PROJECTNAMESPACE.PROJECTNAME.frontend.common
   (:require [PROJECTNAMESPACE.PROJECTNAME.frontend.navigation :as navigation]
             [fork.re-frame :as fork]
+            [clojure.pprint :as pprint]
             [clojure.string :as str]
             [PROJECTNAMESPACE.PROJECTNAME.common :as common]
             [re-frame.core :as rf]

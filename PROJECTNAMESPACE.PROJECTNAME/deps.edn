@@ -22,7 +22,7 @@
                      :sha "cdebdac55f9ef172a70beceb39a65a001d9f22e5"}
   metosin/ring-http-response {:mvn/version "0.9.1"}
   co.deps/ring-etag-middleware {:mvn/version "0.2.1"}
-  hiccup {:mvn/version "1.0.5"}
+  hiccup {:mvn/version "2.0.0-alpha2"}
   integrant {:mvn/version "0.8.0"}
 
   cheshire {:mvn/version "5.10.0"}
