@@ -91,12 +91,13 @@
                    :column-name "Profile"
                    :render-only #{:sort :filter}
                    :render-fn (fn [row id]
-                                [:a.font-bold.color-secondary
+                                [:p.font-bold.color-secondary.underline
                                  "View Asset"])}]]
      {:loading? (and (:loading? db) (not (seq customers)))
       :columns columns
       :rows (get-in db [:data :dashboard/assets])
-      :row-link {:href (fn [row] (reitit/href :asset {:asset (common/id-key (:id row))}))}
+      :row-link {:href (fn [row] (reitit/href
+                                  :asset {:asset (common/id-key (:id row))}))}
       :filters [{:label "Name"
                  :column-key :asset/name}
                 {:label "Type"
@@ -127,7 +128,7 @@
                    :column-name "Profile"
                    :render-only #{:sort :filter}
                    :render-fn (fn [row id]
-                                [:a.font-bold.text-decoration-none.color-secondary
+                                [:p.font-bold.color-secondary.underline
                                  "View Profile"])}]]
      {:loading? (:loading? db)
       :columns columns
