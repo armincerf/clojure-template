@@ -18,7 +18,7 @@
     (keyword "asset" id)))
 
 (def asset-attrs
-  {:crux.db/id ids/asset?
+  {:id ids/asset?
    :asset/name string?
    :asset/description (s/nilable string?)
    :asset/type ::spec/asset-type
@@ -39,7 +39,7 @@
 
 (defn external-view
   [asset]
-  (st/select-spec ::asset (common/add-external-id asset)))
+  (st/select-spec ::asset-ext (common/add-external-id asset)))
 
 (defn all-assets-handler
   [{:keys [node]} _req]
