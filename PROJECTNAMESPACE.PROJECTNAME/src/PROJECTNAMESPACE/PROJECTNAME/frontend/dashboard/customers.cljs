@@ -20,8 +20,15 @@
 (defn profile
   []
   (let [customer @(rf/subscribe [::sub/customer-profile])
+        loading? @(rf/subscribe [:loading?])
         editable-fields (dissoc customer :id)]
-    [:section.profile
-     [:h1 (:name customer) "'s Profile"]
-     (when (seq customer)
-       [frontend.common/auto-form editable-fields])]))
+    (cond
+      loading?
+      [common/loading-component "Loading Profile"]
+      customer
+      [:section.profile
+       [:h1 (:customer/name customer) "'s Profile"]
+       (when (seq customer)
+         [frontend.common/auto-form editable-fields])]
+      :else
+      [:p "No customer found with that ID"])))

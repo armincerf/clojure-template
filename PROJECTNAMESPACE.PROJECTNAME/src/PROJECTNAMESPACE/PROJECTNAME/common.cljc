@@ -28,3 +28,22 @@
   (some-> k
           str
           (subs 1)))
+
+(defn loading-component
+  [title]
+  [:<>
+   [:h1 title]
+   [:div.fill-loader.fill-loader--v6
+    {:role "alert"}
+    [:p.fill-loader__label "Content is loading..."]
+    [:div.fill-loader__grid
+     {:aria-hidden "true"}
+     [:div.fill-loader__bar
+      [:div.fill-loader__base]
+      [:div.fill-loader__fill.fill-loader__fill--1st]]
+     [:div.fill-loader__bar
+      [:div.fill-loader__base]
+      [:div.fill-loader__fill.fill-loader__fill--2nd]]
+     [:div.fill-loader__bar
+      [:div.fill-loader__base]
+      [:div.fill-loader__fill.fill-loader__fill--3rd]]]]])
