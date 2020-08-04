@@ -28,6 +28,9 @@
  :PROJECTNAMESPACE/bad-secret {:type :invalid-request
                                :message "Missing or Incorrect shared secret. Body: {body}"
                                :status 401}
+ :PROJECTNAMESPACE/asset-not-found {:type :invalid-request
+                                       :message "An asset with the id {id} was not found in the database."
+                                       :status 400}
  :PROJECTNAMESPACE/customer-not-found {:type :invalid-request
                                        :message "A customer with the id {id} was not found in the database."
                                        :status 400}}
