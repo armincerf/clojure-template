@@ -53,12 +53,12 @@
                        timeout))))))
 
 (defn auto-form
-  [editable-fields {:keys [collection-name custom-components]}]
+  [editable-fields {:keys [collection-name custom-components submit-fn]}]
   [fork/form {:path :form
               :form-id collection-name
               :prevent-default? true
               :clean-on-unmount? true
-              :on-submit #(rf/dispatch [:data/update % collection-name])
+              :on-submit (or submit-fn #(rf/dispatch [:data/update % collection-name]))
               :initial-values (medley.core/map-keys
                                common/keyword->string
                                editable-fields)}

@@ -40,8 +40,17 @@
 
 (def app-pages
   [{:path ""
+    :icon "G"
     :name :app/homepage
-    :link-text "Home"}])
+    :link-text "Overview"}
+   {:path "/add-data"
+    :icon "z"
+    :name :app/add-data
+    :link-text "Add Data"}
+   {:path "/account-settings"
+    :icon "x"
+    :name :app/account-settings
+    :link-text "Account Settings"}])
 
 (defonce routes
   ["/"

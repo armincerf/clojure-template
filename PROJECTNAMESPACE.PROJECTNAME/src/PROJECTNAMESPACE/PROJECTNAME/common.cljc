@@ -30,6 +30,16 @@
           str
           (subs 1)))
 
+(defn keyword->readable-string
+  "Takes a namespaced keyword and returns a string of the keyword that is
+  capitalized and has dashes and dots replaced with spaces"
+  [k]
+  (-> k
+      keyword->string
+      (str/replace #"\-" " ")
+      (str/replace #"\." " ")
+      str/capitalize))
+
 (defn loading-component
   [title]
   [:<>

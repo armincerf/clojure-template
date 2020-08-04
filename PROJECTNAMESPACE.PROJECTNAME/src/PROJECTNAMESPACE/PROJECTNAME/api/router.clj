@@ -60,6 +60,6 @@
                    :middleware middleware
                    :exception pretty/exception}}
      ;; pretty diffs - set to false if things are getting too slow
-     true
+     false
      (assoc :reitit.middleware/transform
             (partial mw.logging/print-request-diffs request-diffs)))))

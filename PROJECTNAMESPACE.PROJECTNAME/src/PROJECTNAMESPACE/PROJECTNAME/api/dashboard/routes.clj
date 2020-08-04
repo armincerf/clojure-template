@@ -14,7 +14,7 @@
      {:name "viewport"
       :content "width=device-width, initial-scale=1.0, maximum-scale=1.0"}]
     [:link {:rel "icon" :href "/img/dashboard-logo.svg" :type "image/x-icon"}]
-    [:link#pagestyle {:href "/app.css" :rel "stylesheet" :type "text/css"}]
+    [:link#pagestyle {:href "/css/dashboard.css" :rel "stylesheet" :type "text/css"}]
     [:title "PROJECTNAME"]
     (hiccup/include-css "/webjars/font-awesome/5.13.0/css/all.min.css")]
    [:body
@@ -27,15 +27,13 @@
 
 (defn routes
   [components]
-  ["dashboard"
-   ;; TODO is there a better way to allow both /dashboard and /dashboard/* in reitit??
-   [""  {:name :dashboard-cljs-routes-root
-         :get {:handler (fn handle-root-index
-                          [req]
-                          (-> (response/ok (index-html req))
-                              (response/content-type "text/html")))}}]
-   ["/*" {:name :dashboard-cljs-routes
-          :get {:handler (fn handle-index
-                           [req]
-                           (-> (response/ok (index-html req))
-                               (response/content-type "text/html")))}}]])
+  (let [handle-index (fn handle-index
+                       [req]
+                       (-> (response/ok (index-html req))
+                           (response/content-type "text/html")))]
+    ["dashboard"
+     ;; TODO is there a better way to allow both /dashboard and /dashboard/* in reitit??
+     [""  {:name :dashboard-cljs-routes-root
+           :get {:handler handle-index}}]
+     ["/*" {:name :dashboard-cljs-routes
+            :get {:handler handle-index}}]]))
