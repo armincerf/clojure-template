@@ -1,4 +1,4 @@
-(ns PROJECTNAMESPACE.PROJECTNAME.api.dashboard.customers.model
+(ns PROJECTNAMESPACE.PROJECTNAME.api.customers.model
   (:require [net.danielcompton.defn-spec-alpha :as dfs]
             [PROJECTNAMESPACE.PROJECTNAME.api.db :as db]))
 

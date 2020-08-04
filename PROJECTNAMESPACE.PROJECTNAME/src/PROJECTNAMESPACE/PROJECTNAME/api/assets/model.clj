@@ -1,4 +1,4 @@
-(ns PROJECTNAMESPACE.PROJECTNAME.api.dashboard.assets.model
+(ns PROJECTNAMESPACE.PROJECTNAME.api.assets.model
   (:require [net.danielcompton.defn-spec-alpha :as dfs]
             [clojure.tools.logging :as log]
             [clojure.spec.alpha :as s]
@@ -10,6 +10,12 @@
   (db/query node '{:find [?e]
                    :where [[?e :asset/type]]
                    :full-results? true}))
+
+(dfs/defn insert!
+  [node
+   data :- :asset/int]
+  (prn "adding new asset" (:crux.db/id data))
+  (db/insert! node data))
 
 (dfs/defn find-by-id
   [node asset-id :- :asset/id]

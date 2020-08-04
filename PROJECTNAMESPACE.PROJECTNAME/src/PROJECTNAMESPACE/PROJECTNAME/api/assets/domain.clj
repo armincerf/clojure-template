@@ -1,4 +1,4 @@
-(ns PROJECTNAMESPACE.PROJECTNAME.api.dashboard.assets.domain
+(ns PROJECTNAMESPACE.PROJECTNAME.api.assets.domain
   "Asset routes implementation. A asset is a single piece of data which the
   customer has entered so that they can be alerted if it is found in any data
   breaches. This data could be an email, phone number, credit card etc."
@@ -9,8 +9,8 @@
             [clojure.tools.logging :as log]
             [medley.core :as medley]
             [PROJECTNAMESPACE.PROJECTNAME.api.errors :as errors]
-            [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.assets.model :as assets.model]
-            [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.customers.model :as customers.model]
+            [PROJECTNAMESPACE.PROJECTNAME.api.assets.model :as assets.model]
+            [PROJECTNAMESPACE.PROJECTNAME.api.customers.model :as customers.model]
             [PROJECTNAMESPACE.PROJECTNAME.common :as common]
             [PROJECTNAMESPACE.PROJECTNAME.api.ids :as ids]
             [PROJECTNAMESPACE.PROJECTNAME.api.spec :as spec]))
@@ -52,7 +52,26 @@
 (defn asset-by-id-handler
   [req]
   (def req req)
-  {:data (-> req :properties external-view)})
+  (let [asset (-> req :properties external-view)]
+    (when-not (:id asset)
+      (throw (errors/exception
+              :PROJECTNAMESPACE/asset-not-found
+              {:id (asset-id req)})))
+    {:data asset}))
+
+(defn add-asset-handler
+  [{:keys [node]} req]
+  (def req req)
+  (let [asset (-> req
+                  :body-params
+                  :asset
+                  (assoc :crux.db/id (ids/asset)))
+        customer-id (:asset/customer asset)
+        customer (customers.model/find-by-id node customer-id)]
+    (when-not customer
+      (throw (errors/exception
+              :PROJECTNAMESPACE/customer-not-found {:id customer-id})))
+    {:data (external-view (assets.model/insert! node asset))}))
 
 (defn update-asset-handler
   [{:keys [node]} req]
@@ -60,6 +79,7 @@
   (let [id (asset-id req)
         asset (-> req
                   :body-params
+                  :asset
                   (assoc :crux.db/id id)
                   (dissoc :id))
         customer-id (:asset/customer asset)
@@ -68,10 +88,10 @@
       (throw (errors/exception
               :PROJECTNAMESPACE/customer-not-found {:id customer-id})))
     (assets.model/update-by-id node id asset)
-    (ok {:data {:id id :active false :new (external-view (assets.model/find-by-id node id))}})))
+    {:data (external-view (assets.model/find-by-id node id))}))
 
 (defn delete-asset-handler
   [{:keys [node]} req]
   (let [id (asset-id req)]
     (assets.model/delete-by-id node id)
-    (ok {:data {:id id :active false}})))
+    {:data {:id id :active false}}))

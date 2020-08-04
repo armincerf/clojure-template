@@ -1,14 +1,19 @@
-(ns PROJECTNAMESPACE.PROJECTNAME.api.dashboard.assets.routes
+(ns PROJECTNAMESPACE.PROJECTNAME.api.assets.routes
   (:require [clojure.spec.alpha :as s]
             [ring.util.http-response :refer [ok]]
-            [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.assets.model :as assets.model]
-            [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.assets.domain :as assets.domain]))
+            [PROJECTNAMESPACE.PROJECTNAME.api.assets.model :as assets.model]
+            [PROJECTNAMESPACE.PROJECTNAME.api.assets.domain :as assets.domain]))
 
 (defn routes
   [components]
   ["assets" {:swagger {:tags ["Assets"]}}
    [[""
      {:name ::assets-collection
+      :post
+      {:summary "Add a new asset"
+       :responses {200 {:body :asset/ext}}
+       :parameters {:body {:asset :asset/ext}}
+       :handler (fn [req] (ok (assets.domain/add-asset-handler components req)))}
       :get
       {:summary "Retrieve all assets"
        :responses {200 {:body {:data (s/coll-of :asset/ext)}}}
@@ -29,5 +34,5 @@
       :delete
       {:summary "Delete an asset"
        :responses {200 {:body :asset/inactive}}
-       :handler (fn [req] (assets.domain/delete-asset-handler components req))}}]]])
+       :handler (fn [req] (ok (assets.domain/delete-asset-handler components req)))}}]]])
 

@@ -3,10 +3,10 @@
             [crux.api :as crux]
             [hiccup.page :as hiccup]
             [integrant.core :as ig]
-            [PROJECTNAMESPACE.PROJECTNAME.api.app.routes :as app.routes]
-            [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.routes :as dashboard.routes]
-            [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.customers.routes :as customers.routes]
-            [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.assets.routes :as assets.routes]
+            [PROJECTNAMESPACE.PROJECTNAME.api.app.routes :as app]
+            [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.routes :as dashboard]
+            [PROJECTNAMESPACE.PROJECTNAME.api.customers.routes :as customers]
+            [PROJECTNAMESPACE.PROJECTNAME.api.assets.routes :as assets]
             [reitit.ring :as ring]
             [ring.util.http-response :as response]
             [PROJECTNAMESPACE.PROJECTNAME.api.spec :as spec]
@@ -45,8 +45,8 @@
       :or {middleware []}}]
   (let [{:keys [node]} components]
     ["/" {:middleware middleware}
-     (dashboard.routes/routes components)
-     (app.routes/routes components)
+     (dashboard/routes components)
+     (app/routes components)
      ["devcards" {:name :cljs-devcards
                   :get {:handler (fn handle-devcards
                                    [req]
@@ -60,8 +60,8 @@
       {:get {:handler #(sse/sse-handler components %)
              :no-diffs true}}]
      ["api/v1/"
-      (customers.routes/routes components)
-      (assets.routes/routes components)
+      (customers/routes components)
+      (assets/routes components)
 
       ["me"
        {:name ::me

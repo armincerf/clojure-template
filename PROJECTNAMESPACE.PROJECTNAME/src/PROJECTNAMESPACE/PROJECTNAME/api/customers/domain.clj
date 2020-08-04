@@ -1,4 +1,4 @@
-(ns PROJECTNAMESPACE.PROJECTNAME.api.dashboard.customers.domain
+(ns PROJECTNAMESPACE.PROJECTNAME.api.customers.domain
   "Customer routes implementation. A customer is an abstraction that unifies a
   partner account and a consumer account. It captures a consumer's relationship
   to a partner. E.g. Once a consumer has subscribed to a partner's plan, they
@@ -7,7 +7,7 @@
             [ring.util.http-response :refer [ok]]
             [spec-tools.core :as st]
             [spec-tools.data-spec :as ds]
-            [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.customers.model :as customers.model]
+            [PROJECTNAMESPACE.PROJECTNAME.api.customers.model :as customers.model]
             [PROJECTNAMESPACE.PROJECTNAME.common :as common]
             [PROJECTNAMESPACE.PROJECTNAME.api.ids :as ids]
             [PROJECTNAMESPACE.PROJECTNAME.api.spec :as spec]))

@@ -1,8 +1,8 @@
-(ns PROJECTNAMESPACE.PROJECTNAME.api.dashboard.customers.routes
+(ns PROJECTNAMESPACE.PROJECTNAME.api.customers.routes
   (:require [clojure.spec.alpha :as s]
             [ring.util.http-response :refer [ok]]
-            [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.customers.model :as customers.model]
-            [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.customers.domain :as customers.domain]))
+            [PROJECTNAMESPACE.PROJECTNAME.api.customers.model :as customers.model]
+            [PROJECTNAMESPACE.PROJECTNAME.api.customers.domain :as customers.domain]))
 
 (defn routes
   [components]
