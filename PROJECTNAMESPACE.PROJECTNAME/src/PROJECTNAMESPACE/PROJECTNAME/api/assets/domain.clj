@@ -10,6 +10,7 @@
             [medley.core :as medley]
             [PROJECTNAMESPACE.PROJECTNAME.api.errors :as errors]
             [PROJECTNAMESPACE.PROJECTNAME.api.assets.model :as assets.model]
+            [PROJECTNAMESPACE.PROJECTNAME.api.breaches.model :as breaches.model]
             [PROJECTNAMESPACE.PROJECTNAME.api.customers.model :as customers.model]
             [PROJECTNAMESPACE.PROJECTNAME.common :as common]
             [PROJECTNAMESPACE.PROJECTNAME.api.ids :as ids]
@@ -41,6 +42,7 @@
 
 (defn external-view
   [asset]
+  (prn asset)
   (st/select-spec ::asset-ext (common/add-external-id asset)))
 
 (defn all-assets-handler
@@ -50,28 +52,39 @@
               (mapv external-view))})
 
 (defn asset-by-id-handler
-  [req]
+  [{:keys [node]} req]
   (def req req)
   (let [asset (-> req :properties external-view)]
     (when-not (:id asset)
       (throw (errors/exception
               :PROJECTNAMESPACE/asset-not-found
               {:id (asset-id req)})))
-    {:data asset}))
+    {:data (assoc asset
+                  :asset/breaches
+                  (breaches.model/find-by-id node (:id asset)))}))
 
 (defn add-asset-handler
   [{:keys [node]} req]
   (def req req)
-  (let [asset (-> req
-                  :body-params
-                  :asset
-                  (assoc :crux.db/id (ids/asset)))
+  (let [asset (some-> req
+                      :body-params
+                      :asset
+                      (assoc :crux.db/id (ids/asset)))
+        _assert-asset-exists
+        (when-not asset
+          (throw (errors/exception :missing-field)))
         customer-id (:asset/customer asset)
+        ;;hardcode until auth in place
+        customer-id (:crux.db/id (first (customers.model/find-all node)))
         customer (customers.model/find-by-id node customer-id)]
+    (prn asset)
     (when-not customer
       (throw (errors/exception
               :PROJECTNAMESPACE/customer-not-found {:id customer-id})))
-    {:data (external-view (assets.model/insert! node asset))}))
+    {:data (external-view (assets.model/insert!
+                           node
+                           (assoc asset
+                                  :asset/customer customer-id)))}))
 
 (defn update-asset-handler
   [{:keys [node]} req]

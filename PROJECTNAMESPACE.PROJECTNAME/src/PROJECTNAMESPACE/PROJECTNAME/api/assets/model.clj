@@ -7,14 +7,13 @@
 (defn find-all
   [node]
   (def node node)
-  (db/query node '{:find [?e]
-                   :where [[?e :asset/type]]
-                   :full-results? true}))
+  (db/query node '{:find [(eql/project ?e [*])]
+                   :where [[?e :asset/type]]}))
 
 (dfs/defn insert!
   [node
    data :- :asset/int]
-  (prn "adding new asset" (:crux.db/id data))
+  (prn "adding new asset" (:asset/customer data))
   (db/insert! node data))
 
 (dfs/defn find-by-id

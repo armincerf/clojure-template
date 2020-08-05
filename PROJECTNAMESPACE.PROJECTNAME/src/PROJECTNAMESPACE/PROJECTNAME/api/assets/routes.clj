@@ -20,12 +20,15 @@
        :handler (fn [req] (ok (assets.domain/all-assets-handler components req)))}}]
     ["/:id"
      {:name ::asset-resource
-      :properties (fn [req] (assets.model/find-by-id (:node components) (assets.domain/asset-id req)))
+      :properties (fn [req]
+                    (assets.model/find-by-id
+                     (:node components)
+                     (assets.domain/asset-id req)))
       :parameters {:path {:id string?}}
       :get
       {:summary "Retrieve an asset"
        :responses {200 {:body :asset/ext}}
-       :handler (fn [req] (ok (assets.domain/asset-by-id-handler req)))}
+       :handler (fn [req] (ok (assets.domain/asset-by-id-handler components req)))}
       :put
       {:summary "Update an asset"
        :responses {200 {:body :asset/ext}}
