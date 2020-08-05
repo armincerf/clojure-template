@@ -54,3 +54,13 @@
  (fn [db _]
    (:user db)))
 
+(rf/reg-sub
+ ::current-asset
+ (fn [db _]
+   (get-in db [:data :current-asset])))
+
+(rf/reg-sub
+ ::assets
+ (fn [db _]
+   (get-in db [:data :assets])))
+

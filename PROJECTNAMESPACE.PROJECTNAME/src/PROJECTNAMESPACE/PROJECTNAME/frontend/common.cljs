@@ -4,6 +4,7 @@
             [clojure.pprint :as pprint]
             [clojure.string :as str]
             [PROJECTNAMESPACE.PROJECTNAME.common :as common]
+            [medley.core :as medley]
             [re-frame.core :as rf]
             [reitit.frontend :as reitit]
             [reitit.frontend.easy :as rfe]))
@@ -105,3 +106,10 @@
     [:code
      {:style {:text-align "left"}}
      [:pre (pprint-str x)]]))
+
+(defn id-route
+  "Given a route key and map containing an namespaced id path param, returns a url
+  string"
+  [key params]
+  (prn params)
+  (rfe/href key (medley/map-vals common/id-key params)))

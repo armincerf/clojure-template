@@ -119,7 +119,7 @@
 (defn top-nav
   [current-page]
   (let [show-menu? @(rf/subscribe [:show-menu?])
-        title "havemydatasbeenpwnedornot"]
+        title "havemydatasbeenpwnedornotletsfindout.com"]
     [:div {:class "top-nav"}
      [:div {:class "nav-top__container"}
       [:div {:class "w-hidden-medium w-hidden-small w-hidden-tiny w-row"}
@@ -134,8 +134,8 @@
             [:div {:class "w-icon-dropdown-toggle"}]
             [:div "Category"]]
            [:nav {:class "droplistsearch w-dropdown-list"}
-            [:a {:href "#", :class "ddcatlink w-dropdown-link"} "User"]
-            [:a {:href "#", :class "ddcatlink ddbottom w-dropdown-link"} "Project"]]]]
+            [:a {:href "#", :class "ddcatlink w-dropdown-link"} "Asset"]
+            [:a {:href "#", :class "ddcatlink ddbottom w-dropdown-link"} "Data Breach"]]]]
          [:div {:class "successsearch w-form-done"}]
          [:div {:class "w-form-fail"}
           [:div "Oops! Something went wrong while submitting the form."]]]]
@@ -235,7 +235,7 @@
      [:div {:class "top-nav__avatar leftavatar"}]]
     [:div {:class "w-col w-col-10"}
      [:div {:class "user-name-text leftnametext"} "Welcome, Alex!"]
-     [:div {:class "user-name-text leftnametext detailtext"} "Admin"]]]
+     [:div {:class "user-name-text leftnametext detailtext"} "Last login: 05/08/2020 16:54"]]]
    [:div {:class "leftmenucontain"}
     (for [{:keys [link-text name disabled? icon children]}
           (filter :icon routes/app-pages)]

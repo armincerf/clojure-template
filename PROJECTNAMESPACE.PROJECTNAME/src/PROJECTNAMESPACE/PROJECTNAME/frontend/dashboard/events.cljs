@@ -36,18 +36,6 @@
                                              [:p (:company-name alert)]]]}}]}))
 
 (rf/reg-event-fx
- :global-message/add
- (fn [{:keys [db]} [_ message]]
-   {:db (assoc db :global-message message)
-    :dispatch-later [{:ms 3000
-                      :dispatch [:global-message/dismiss]}]}))
-
-(rf/reg-event-db
- :global-message/dismiss
- (fn [db _]
-   (dissoc db :global-message)))
-
-(rf/reg-event-fx
  :data/update
  (fn [{:keys [db]} [_ {:keys [values]} collection-name]]
    (let [data-url (str "/api/v1/" collection-name)]

@@ -1,1 +1,133 @@
 @import 'variables', 'table', 'include-media', 'tooltipster';
+
+@keyframes fadeInOpacity {
+	  0% {
+		    opacity: 0;
+	  }
+	  100% {
+		    opacity: 1;
+	  }
+}
+
+.toasts {
+    position: fixed;
+    bottom: 20px;
+    right: 10px;
+    margin-left: 10px;
+
+    z-index: 1000;
+
+    display: flex;
+    flex-direction: column;
+
+    > * {
+        margin-bottom: 1em;
+    }
+}
+
+.toast {
+    min-width: 250px;
+    max-width: 100%;
+    padding: 0.5em;
+
+    display: flex;
+    flex-direction: column;
+
+    animation-name: fadeInOpacity;
+	  animation-iteration-count: 1;
+	  animation-timing-function: ease-in;
+	  animation-duration: 0.1s;
+
+    .toast__body {
+        flex: 1;
+        position: initial;
+    }
+
+    .toast__header {
+        padding: 0 0 .6em 0;
+        font-size: 0.7em;
+        font-weight: 400;
+    }
+
+    .delete {
+        cursor: pointer;
+        position: absolute;
+        align-self: flex-end;
+
+        z-index: 2000;
+
+        opacity: 0.5;
+        color: inherit;
+    }
+    .delete:hover {
+        opacity: 1;
+    }
+}
+
+.notification__icon {
+    padding-right: 0.5em;
+}
+
+.boldunderline {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.notification-body__text {
+    font-size: 0.6em;
+
+    .boldunderline {
+        padding-bottom: 0.3em;
+    }
+}
+
+.toast--error {
+    background-color: red;
+    color: white;
+}
+
+
+.toast--success {
+    background-color: green;
+    color: white;
+}
+
+.toast--info {
+    background-color: blue;
+    color: white;
+}
+
+.toast__header {
+    font-weight: bold;
+}
+
+.breadcrumb {
+    color: black;
+
+    &__link {
+        text-decoration-color: blue;
+        color: var(--color-contrast-medium);
+        cursor: pointer;
+        &:not(.breadcrumb--active):hover {
+            color: blue;
+        }
+    }
+
+    &__divider {
+        color: var(--color-contrast-medium);
+    }
+
+    &--active {
+        font-weight: bold;
+        cursor: initial;
+    }
+}
+
+.debug {
+    box-shadow: 0 0 17px -5px hsla(0, 0%, 62.7%, 0.95);
+    background: lightgreen;
+    position: absolute;
+    top: -21px;
+    padding: 1em;
+    left: 25vw;
+}

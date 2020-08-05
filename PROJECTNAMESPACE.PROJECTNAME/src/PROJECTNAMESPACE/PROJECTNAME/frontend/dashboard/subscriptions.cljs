@@ -3,6 +3,7 @@
    [reitit.frontend.easy :as reitit]
    [medley.core :as medley]
    [PROJECTNAMESPACE.PROJECTNAME.frontend.table-utils :as table-utils]
+   [PROJECTNAMESPACE.PROJECTNAME.frontend.common :as frontend.common]
    [PROJECTNAMESPACE.PROJECTNAME.common :as common]
    [re-frame.core :as rf]))
 
@@ -76,13 +77,14 @@
                   {:column-key :asset/customer
                    :column-name "Asset Customer"
                    :row-link {:href (fn [row]
-                                      (reitit/href
-                                       :dashboard/customer
-                                       {:customer (common/id-key (:asset/customer row))}))}
-                   :render-fn (fn [row id]
+                                      (frontend.common/id-route
+                                       :dashboard/customers
+                                       {:customer (:asset/customer row)}))}
+                   :render-fn (fn [row]
                                 [:p.font-bold.color-secondary.underline
                                  (or (:customer/name
-                                      (common/find-by-id customers id))
+                                      (common/find-by-id
+                                       customers (:asset/customer row)))
                                      "View Customer")])}
                   {:column-key :id
                    :column-name "Profile"
@@ -93,8 +95,9 @@
      {:loading? (and (:loading? db) (not (seq customers)))
       :columns columns
       :rows (get-in db [:data :dashboard/assets])
-      :row-link {:href (fn [row] (reitit/href
-                                  :dashboard/asset {:asset (common/id-key (:id row))}))}
+      :row-link {:href (fn [row] (frontend.common/id-route
+                                  :dashboard/assets
+                                  {:asset (:id row)}))}
       :filters [{:label "Name"
                  :column-key :asset/name}
                 {:label "Type"

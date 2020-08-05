@@ -42,11 +42,15 @@
   [{:path ""
     :icon "G"
     :name :app/homepage
-    :link-text "Overview"}
+    :link-text "Overview"
+    :dispatch [:asset/fetch-all]}
    {:path "/add-data"
     :icon "z"
     :name :app/add-data
     :link-text "Add Data"}
+   {:path "/asset/:asset"
+    :name :app/asset-profile
+    :dispatch [:asset/fetch-by-id]}
    {:path "/account-settings"
     :icon "x"
     :name :app/account-settings

@@ -218,7 +218,7 @@
       (let [[processed-rows paginated-rows] (utils/process-rows data @table-atom)
             debug? @(rf/subscribe [:debug?])]
         [:<>
-         (when debug? [:div "Debug on (ctrl+del to turn off): Keys available = " (str (keys (first (:rows data))))])
+         (when debug? [:code.debug "Debug on (ctrl+del to turn off): Keys available = " (str (keys (first (:rows data))))])
          [:div.uikit-table
           [table-filters data table-atom paginated-rows]
           [:div.table-container

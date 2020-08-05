@@ -62,9 +62,7 @@
 (defn logo
   [sidebar?]
   [:div.logo
-   [:img.logo-img
-    {:src "/img/logo.svg"
-     :class (when-not sidebar? "logo-img--mobile")}]
+   [:p "HMDBPONLFO"]
    (when sidebar?
      [:img.logo-img--mobile
       {:src "/img/logo-big.svg"}])])

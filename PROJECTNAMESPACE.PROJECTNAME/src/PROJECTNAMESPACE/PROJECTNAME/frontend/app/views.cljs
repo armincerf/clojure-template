@@ -11,6 +11,10 @@
    [PROJECTNAMESPACE.PROJECTNAME.frontend.http :as http]
    [clojure.string :as str]))
 
+(defn type->icon-class
+  [type]
+  (str "asset-icon " (common-shared/keyword->string type) "-icon"))
+
 (defn type-selector
   [selected-type]
   (let [type-keyword @selected-type]
@@ -21,9 +25,7 @@
        [:a.card.asset-type
         {:class (when active? "asset-type--active")
          :on-click #(reset! selected-type asset-type)}
-        (common-shared/keyword->readable-string asset-type)
-        (when-not active?
-          [:i.fa.fa-plus])])]))
+        (common-shared/keyword->readable-string asset-type)])]))
 
 (defn data-input
   [{:keys [handle-change handle-blur submitting?]} options]
@@ -48,18 +50,90 @@
     label]
    [:div.form-control-wrapper input]])
 
+(defn asset-profile
+  []
+  (let [{:keys [id
+                asset/name
+                asset/description
+                asset/data
+                asset/type
+                asset/breaches] :as asset}
+        @(rf/subscribe [::sub/current-asset])
+        type-str (common-shared/keyword->readable-string type)
+        breaches (:breach/data breaches)]
+    [:div {:class "page-content w-clearfix"}
+     [:h1 {:class "page-title"}
+      [components/breadcrumb
+       [{:label "Assets"
+         :href (common/route->url :app/homepage)}
+        {:label name}]]]
+     [:div {:class "topdashbar"}
+      [:div {:class "stathold"}
+       [:div {:class "statrow w-row"}
+        [:div {:class "leftcolstat w-col w-col-4 w-col-stack"}
+         [:div {:class "circlewicon nomeetingsicon"}]]
+        [:div {:class "column-7 w-col w-col-8 w-col-stack"}
+         [:div {:class "topdashbartext"} "Risk score"]
+         [:div {:class "topdashbartext number"} "36"]
+         [:div {:class "topdashbartext number desctext"} "/100"]]]]
+      [:div {:class "stathold"}
+       [:div {:class "statrow w-row"}
+        [:div {:class "w-col w-col-4 w-col-stack"}
+         [:div {:class "circlewicon rescheduleicon"}]]
+        [:div {:class "column-8 w-col w-col-8 w-col-stack"}
+         [:div {:class "topdashbartext"} name]
+         [:div {:class "topdashbartext number"} "2"]
+         [:div {:class "topdashbartext number desctext"} "This Month"]]]]
+      [:div {:class "stathold laststat bottomlaststat"}
+       [:div {:class "statrow statlastbottom w-row"}
+        [:div {:class "w-col w-col-4 w-col-stack"}
+         [:div {:class "circlewicon cancelledmeetings"}]]
+        [:div {:class "column-9 w-col w-col-8 w-col-stack"}
+         [:div {:class "topdashbartext"} "Total scans"]
+         [:div {:class "topdashbartext number"} "5"]
+         [:div {:class "topdashbartext number desctext"} "This Month"]]]]]
+     [:div.asset-details.card
+      [:h3 "Asset Details"]
+      [:div.asset-details__icon
+       {:class (type->icon-class type)}]
+      [:div.asset-details__label
+       name]
+      [:div.asset__data data]
+      (when description
+        [:div.asset-details__item
+         [:div.asset-details__label "Description:"]
+         [:div.asset__description description]])
+      [:div.asset-details__item
+       [:div.asset-details__label "Last scan:"]
+       [:div.asset__description "2010"]]
+      [:h3 "Breaches"]
+      [:div.asset-details__breaches
+       (if (seq breaches)
+         [:div.breaches
+          [:p "Oh jeez... looks like the following websites/companies have been
+         hacked and leaked your private information! Click on a name to show
+         more details about the breach."]
+          (for [{:keys [Name]} breaches]
+            ^{:key Name}
+            [:a Name])]
+         [:p "Good news! Your data has not been found in any data breaches or
+         hacks"])
+       [:button
+        {:on-click #(rf/dispatch [:asset/search-breaches id])}
+        "Search for new breaches"]]]]))
+
 (defn add-data
   []
   (let [selected-type (r/atom :email)]
     (fn []
-      [:div {:class "div-block-7 w-clearfix"}
-       [:h1.meetingsh1 "Add data"]
+      [:div {:class "page-content w-clearfix"}
+       [:h1.page-title "Add data"]
        [type-selector selected-type]
        [fork/form {:path :new-asset
                    :form-id "asset"
                    :prevent-default? true
                    :clean-on-unmount? true
-                   :on-submit #(rf/dispatch [:add-asset selected-type %])
+                   :on-submit #(rf/dispatch [:asset/create @selected-type %])
                    :initial-values
                    {:asset/name ""
                     :asset/description ""
@@ -90,10 +164,45 @@
   []
   [:div "settings"])
 
+(defn my-assets
+  []
+  (let [assets @(rf/subscribe [::sub/assets])]
+    [:div.assets
+     (for [{:keys [id
+                   asset/data
+                   asset/name
+                   asset/type]} assets
+           :let [last-scan "Last scanned - 10:30 AM"]]
+       ^{:key id}
+       [:div {:class "meetingdetailcontain float-left"}
+        [:div {:class "meetingdetailtopdiv"}
+         [:div {:class "w-row"}
+          [:div {:class "column-10 w-col w-col-5"}
+           [:div {:class (type->icon-class type)}]]
+          [:div {:class "w-col w-col-7"}
+           [:div {:class "meetingtitle"}
+            (common-shared/keyword->readable-string type)]
+           [:div {:class "meetingtitle meetingemail"}
+            (if (= :password type)
+              "*********"
+              data)]
+           [:div {:class "meetingtitle meetingemail meetingtime w-hidden-small w-hidden-tiny"} last-scan]]]]
+        [:div {:class "meetingdetailmiddlediv"}
+         [:div {:class "w-row"}
+          [:div {:class "w-col w-col-6"}
+           [:div {:class "alert-text"} (rand-nth ["No" "2" "3"]) " New Alerts"]]
+          [:div {:class "w-col w-col-6"}
+           [:div {:class "alert-text resolved-alert"} (rand-nth ["1" "3"]) " Resolved Alerts"]]]]
+        [:div {:class "meetingtitle meetingemail only-mobile"}
+         last-scan]
+        [:a {:href (common/id-route :app/asset-profile {:asset id})
+             :class "bottommorelink bottommoreright w-inline-block"}
+         [:div {:class "detailscallinktext"} "View Details"]]])]))
+
 (defn overview
   []
-  [:div {:class "div-block-7 w-clearfix"}
-   [:h1 {:class "meetingsh1"} "Alerts"]
+  [:div {:class "page-content w-clearfix"}
+   [:h1 {:class "page-title"} "Assets"]
    [:div {:class "topdashbar"}
     [:div {:class "stathold"}
      [:div {:class "statrow w-row"}
@@ -116,97 +225,78 @@
       [:div {:class "w-col w-col-4 w-col-stack"}
        [:div {:class "circlewicon cancelledmeetings"}]]
       [:div {:class "column-9 w-col w-col-8 w-col-stack"}
-       [:div {:class "topdashbartext"} "Total scans completed"]
+       [:div {:class "topdashbartext"} "Total scans"]
        [:div {:class "topdashbartext number"} "20"]
        [:div {:class "topdashbartext number desctext"} "This Month"]]]]]
-   [:div {:class "numberofmeetings"} "My Data - If you see a warning sign,
-     we've found your details somewhere they shouldn't be."]
-   [:div {:data-ix "meetingdetail1", :class "meetingdetailcontain float-left"}
-    [:div {:class "meetingdetailtopdiv"}
-     [:div {:class "w-row"}
-      [:div {:class "column-10 w-col w-col-5"}
-       [:div {:class "meetingimgdiv"}]]
-      [:div {:class "w-col w-col-7"}
-       [:div {:class "meetingtitle"} "Email"]
-       [:div {:class "meetingtitle meetingemail"} "adellac@josianne.com"]
-       [:div {:class "meetingtitle meetingemail meetingtime w-hidden-small w-hidden-tiny"} "Last scanned - 10:30 AM"]]]]
-    [:div {:class "meetingdetailmiddlediv"}
-     [:div {:class "w-hidden-small w-hidden-tiny w-row"}
-      [:div {:class "w-col w-col-6"}
-       [:div {:class "alert-text"} "2 New Alerts"]]
-      [:div {:class "w-col w-col-6"}
-       [:div {:class "alert-text resolved-alert"} "3 Resolved Alerts"]]]
-     [:div {:class "w-hidden-main w-hidden-medium w-row"}
-      [:div {:class "column-25 w-col w-col-4 w-col-small-6 w-col-tiny-6"}
-       [:div {:tooltipster "bottom-delay", :title "Lucas Davenport", :class "attendeediv attend1"}]
-       [:div {:tooltipster "bottom-delay", :title "Shrake Jenkins", :class "attendeediv attend1 attendplu attend2"}]
-       [:div {:title "Weather Karkinnen", :tooltipster "bottom-delay", :class "attendeediv attend1 attendplu attend3"}]
-       [:div {:tooltipster "bottom-delay", :title "Eleanor Wish", :class "attendeediv attend1 attendplu attend4"}]
-       [:div {:class "plusnumore w-hidden-main w-hidden-medium"} "+5 More"]]
-      [:div {:class "column-26 w-col w-col-8 w-col-small-6 w-col-tiny-6"}
-       [:div {:class "alert-text"} "9 Members Going"]
-       [:div {:class "alert-text resolved-alert"} "2 Pending"]]]]
-    [:a {:href "#", :class "bottommorelink w-hidden-main w-hidden-medium w-inline-block"}
-     [:div {:class "detailscallinktext"} "10:30 AM"]]
-    [:a {:href "#", :class "bottommorelink bottommoreright w-inline-block"}
-     [:div {:class "detailscallinktext"} "View Details"]]]])
+   [:div {:class "numberofmeetings"}
+    "My Assets"
+    [my-assets]]])
 
 (defn home
   []
   )
 
+(defn inbox
+  [show-inbox?]
+  (fn []
+    [:div {:class "inboxcontain"
+           :style {:display (if @show-inbox? "block" "none")}}
+     [:div {:class "iteminboxdiv"}
+      [:div {:class "iteminboxdetaildiv"}
+       [:div {:class "div-block-8"}]
+       [:div {:class "iteminboxdetailtext"} "01/01/2020 10:30"]]
+      [:div
+       [:div "Email found in Yahoo data leak!"]
+       [:div {:class "inboxnumbertext"} "work-email@fakemail.com"]]]
+     [:div {:class "iteminboxdiv"}
+      [:div {:class "iteminboxdetaildiv"}
+       [:div {:class "div-block-8"}]
+       [:div {:class "iteminboxdetailtext"} "01/05/2020 12:30"]]
+      [:div
+       [:div "Email found in Hotmail data leak!"]
+       [:div {:class "inboxnumbertext"} "home-email@fakemail.com"]]]
+     [:div {:class "iteminboxdiv itembuttondiv"}
+      [:a {:class "inboxbutton leftinboxbutton w-inline-block"}
+       [:div "Refresh"]]
+      [:a {:data-ix "new-interaction-3"
+           :class "inboxbutton w-inline-block"
+           :on-click #(do
+                        (.preventDefault %)
+                        (reset! show-inbox? false))}
+       [:div "Close"]]]
+     (when-not show-inbox?
+       [:div {:class "iteminboxdiv bottombelldiv w-clearfix"}
+        [:div {:class "meetingrightdiv"}]
+        [:div {:class "w-row"}
+         [:div {:class "w-col w-col-4"}
+          [:div {:class "calimginbox bottombellimg"}]]
+         [:div {:class "w-col w-col-8"}
+          [:div "Inbox"]
+          [:div {:class "inboxdate w-embed w-script"}]]]])]))
+
 (defn views
   []
-  (let [show-inbox? (r/atom false)]
-    (fn []
-      (let [page @(rf/subscribe [::sub/page])]
-        [:<>
-         [components/top-nav]
-         [:div {:class "section"}
-          [:a {:href "#", :data-ix "new-interaction-2"
-               :class "inboxdiv w-hidden-small w-hidden-tiny w-inline-block"
-               :on-click #(swap! show-inbox? not)}
-           [:div {:class "bell"} "H"]]
-          [:div {:class "pagecontain"}
-           [:div {:class "div-block-6"}
-            [components/left-menu page]
-            (case page
-              :app/homepage [overview]
-              :app/add-data [add-data]
-              :app/account-settings [account-settings]
-              [:p.font-italic
-               (str "No content for page " page)])]]
-          [:div {:class "inboxcontain"
-                 :style {:display (if @show-inbox? "block" "none")}}
-           [:div {:class "iteminboxdiv"}
-            [:div {:class "iteminboxdetaildiv"}
-             [:div {:class "div-block-8"}]
-             [:div {:class "iteminboxdetailtext"} "01/01/2020 10:30"]]
-            [:div
-             [:div "Email found in Yahoo data leak!"]
-             [:div {:class "inboxnumbertext"} "work-email@fakemail.com"]]]
-           [:div {:class "iteminboxdiv"}
-            [:div {:class "iteminboxdetaildiv"}
-             [:div {:class "div-block-8"}]
-             [:div {:class "iteminboxdetailtext"} "01/05/2020 12:30"]]
-            [:div
-             [:div "Email found in Hotmail data leak!"]
-             [:div {:class "inboxnumbertext"} "home-email@fakemail.com"]]]
-           [:div {:class "iteminboxdiv itembuttondiv"}
-            [:a {:href "#", :class "inboxbutton leftinboxbutton w-inline-block"}
-             [:div "Refresh"]]
-            [:a {:href "#", :data-ix "new-interaction-3", :class "inboxbutton w-inline-block"
-                 :on-click #(reset! show-inbox? false)}
-             [:div "Close"]]]
-           (when-not show-inbox?
-             [:div {:class "iteminboxdiv bottombelldiv w-clearfix"}
-              [:div {:class "meetingrightdiv"}]
-              [:div {:class "w-row"}
-               [:div {:class "w-col w-col-4"}
-                [:div {:class "calimginbox bottombellimg"}]]
-               [:div {:class "w-col w-col-8"}
-                [:div "Inbox"]
-                [:div {:class "inboxdate w-embed w-script"}
-                 [:script "var today = new Date();\nvar dd = today.getDate();\nvar mm = today.getMonth()+1; //January is 0!\nvar yyyy = today.getFullYear();\nif(dd<10) {\n    dd = '0'+dd\n} \nif(mm<10) {\n    mm = '0'+mm\n} \ntoday = mm + '/' + dd + '/' + yyyy;\ndocument.write(today);"]]]]])]]
-         [components/modal]
-         [messages/toast]]))))
+  (let [page @(rf/subscribe [::sub/page])
+        show-inbox? (r/atom false)]
+    [:<>
+     [components/top-nav]
+     [:div {:class "section"}
+      [:a {:data-ix "new-interaction-2"
+           :class "inboxdiv w-hidden-small w-hidden-tiny w-inline-block"
+           :on-click #(do
+                        (.preventDefault %)
+                        (swap! show-inbox? not))}
+       [:div {:class "bell"} "H"]]
+      [:div {:class "pagecontain"}
+       [:div {:class "div-block-6"}
+        [components/left-menu page]
+        (case page
+          :app/homepage [overview]
+          :app/add-data [add-data]
+          :app/asset-profile [asset-profile]
+          :app/account-settings [account-settings]
+          [:p.font-italic
+           (str "No content for page " page)])]]
+      [inbox show-inbox?]]
+     [components/modal]
+     [messages/toast]]))

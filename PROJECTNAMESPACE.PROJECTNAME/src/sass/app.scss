@@ -2,7 +2,28 @@
 
 body {
     --primary: #2290ff;
+    --light-grey: #a0a0a0;
+    --asset-wrap: no-wrap;
+    --input-width: 50%;
+    --input-margin: 0 1em 0 0;
+    --only-mobile-display: none;
 }
+
+@include media ("<xl") {
+    body {
+        --input-width: 100%;
+    }
+}
+
+@include media ("<m") {
+    body {
+        --asset-wrap: wrap;
+        --input-margin: 0;
+        --only-mobile-display: block;
+    }
+}
+
+.only-mobile { display: var(--only-mobile-display) }
 
 a {
     cursor: pointer;
@@ -17,15 +38,22 @@ a {
 .asset-types {
     display: flex;
     margin: 1em 0;
+    width: var(--input-width);
+    flex-wrap: var(--asset-wrap);
+}
+
+#asset {
+    width: 90vw;
 }
 
 .asset-type {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-right: 1em;
+    margin: var(--input-margin);
     height: 30px;
-    width: 120px;
+    min-width: 100px;
+    width: var(--input-width);
 
     i {
         padding-left: 10px;
@@ -38,5 +66,64 @@ a {
 }
 
 .form-control {
-    width: 50%;
+    width: var(--input-width);
 }
+
+.asset-details {
+    margin: 3em 0;
+    padding: 3em 2em 2em;
+    position: relative;
+
+    &__icon {
+        height: 50px;
+        width: 50px;
+        position: absolute;
+        top: -15px;
+        left: -10px;
+        background-size: contain !important;
+    }
+    h1 {
+        font-family: 'Sriracha', arial, sans-serif;
+        text-align: center;
+        margin-bottom: 20px;
+        color: var(--primary);
+    }
+    .social {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: calc(100% - 40px);
+        margin: 0 auto;
+        a {
+            text-align: center;
+            border: solid 2px var(--primary);
+            width: 75px;
+            padding: 5px 0;
+            border-radius: 5px;
+            &:hover {
+                background: var(--primary);
+                color: white;
+                cursor: pointer;
+            }
+        }
+    }
+    &__item {
+        display: flex;
+    }
+    &__label {
+        padding-right: 1em;
+        font-size: 0.8em;
+        color: var(--light-grey);
+    }
+}
+
+.breaches {
+    padding: 1em 0;
+    display: flex;
+    flex-direction: column;
+    a {
+        text-decoration: underline;
+        color: blue;
+    }
+}
+
