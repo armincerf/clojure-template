@@ -19,6 +19,18 @@
       (map first result)
       result)))
 
+(defn query-with-last-updated
+  "Executes the query and assocs the last updated tx-time to the result"
+  [node q]
+  (let [results (query node q)]
+    (for [item results]
+      (do
+        (assoc item
+               :tx-time
+               (:crux.db/valid-time
+                (crux/entity-tx
+                 (crux/db node) (:crux.db/id item))))))))
+
 (defn insert!
   "Inserts data into crux, data can be either a map or a sequence of maps.
    Optionally takes a async? boolean, if true the function will immediately
@@ -27,15 +39,16 @@
   ([system data] (insert! system data false))
   ([system data async?]
    (if (seq data)
-     (do (crux/submit-tx
-          system
-          (if (map? data)
-            [[:crux.tx/put
-              data]]
-            (vec (for [item data]
-                   [:crux.tx/put item]))))
-         (when-not async? (crux/sync system))
-         data)
+     (let [{:keys [crux.tx/tx-time]}
+           (crux/submit-tx
+            system
+            (if (map? data)
+              [[:crux.tx/put
+                data]]
+              (vec (for [item data]
+                     [:crux.tx/put item]))))]
+       (when-not async? (crux/sync system))
+       (assoc data :tx-time tx-time))
      (log/error "Not transacting as data is not valid" {:data data}))))
 
 (defn lookup-vector
