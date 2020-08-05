@@ -1,6 +1,7 @@
 (ns PROJECTNAMESPACE.PROJECTNAME.common
   (:require [clojure.walk :as walk]
             [clojure.string :as str]
+            [tick.alpha.api :as tick]
             [medley.core :as medley]))
 
 (defn remove-kw-ns
@@ -64,3 +65,30 @@
   "Given a list of maps, find the first map where the :id key equals the given id"
   [data id]
   (medley/find-first #(= id (:id %)) data))
+
+(defn format-tx-time
+  "Given an instant, returns a human readable 12 hour time string. E.g '02:00PM'"
+  [tx-time]
+  #?(:cljs (some-> tx-time
+                   tick/inst
+                   (.toLocaleTimeString
+                    #js []
+                    #js {:hour12 true
+                         :hour "numeric"
+                         :minute "numeric"}))
+     ;; there's probably a better way to do this but at least its easy to
+     ;; understand and consistant with the JS version
+     :clj (let [minute (tick/minute tx-time)
+                hour (tick/hour tx-time)]
+            (cond
+              (= (tick/noon) tx-time)
+              "12:00 NOON"
+
+              (>= hour 13)
+              (format "%02d:%02d PM" (- hour 12) minute)
+
+              (>= hour 12)
+              (format "%02d:%02d PM" hour minute)
+
+              (< hour 12)
+              (format "%02d:%02d AM" hour minute)))))

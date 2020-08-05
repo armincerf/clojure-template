@@ -13,20 +13,22 @@
 
 (dfs/defn insert!
   [node
-   data :- :breach/int
+   breach :- :breach/int
    asset-id]
-  (prn "adding new breach" {:crux.db/id (ids/breach)
-                            :breach/data data})
-  (db/insert! node {:crux.db/id (ids/breach)
-                    :breach/assets #{asset-id}
-                    :breach/data data}))
+  (db/insert! node (merge
+                    {:crux.db/id (or (:crux.db/id breach)
+                                     (ids/breach))
+                     :breach/assets #{asset-id}}
+                    breach)))
 
 (dfs/defn find-by-id
   [node asset-id :- :asset/id]
   (log/info "finding " asset-id)
-  (first (db/query node {:find '[(eql/project ?breach [:breach/data])]
-                         :where '[[?breach :breach/assets id]]
-                         :args [{'id asset-id}]})))
+  (first
+   (db/query-with-last-updated
+    node {:find '[(eql/project ?breach [:breach/data :crux.db/id])]
+          :where '[[?breach :breach/assets id]]
+          :args [{'id asset-id}]})))
 
 (dfs/defn delete-by-id
   [node breach-id :- :breach/id]

@@ -25,7 +25,8 @@
     (keyword "asset" id)))
 
 (def breach-attrs
-  {:breach/data map?})
+  {:breach/data map?
+   :tx-time inst?})
 
 (s/def ::breach-ext
   (ds/spec {:name ::breach-ext
@@ -45,51 +46,11 @@
   [req]
   (def req req)
   (let [breach (some-> req :properties external-view)]
-    (when-not (:id breach)
+    (when-not (:breach/data breach)
       (throw (errors/exception
               :PROJECTNAMESPACE/breach-not-found
               {:id (asset-id req)})))
     {:data breach}))
-
-(defn add-breach-handler
-  [{:keys [node]} req]
-  (def req req)
-  (let [breach (some-> req
-                      :body-params
-                      :breach
-                      (assoc :crux.db/id (ids/breach)))
-        _assert-breach-exists
-        (when-not breach
-          (throw (errors/exception :missing-field)))
-        customer-id (:breach/customer breach)
-        ;;hardcode until auth in place
-        customer-id (:crux.db/id (first (customers.model/find-all node)))
-        customer (customers.model/find-by-id node customer-id)]
-    (prn breach)
-    (when-not customer
-      (throw (errors/exception
-              :PROJECTNAMESPACE/customer-not-found {:id customer-id})))
-    {:data (external-view (breaches.model/insert!
-                           node
-                           (assoc breach
-                                  :breach/customer customer-id)))}))
-
-(defn update-breach-handler
-  [{:keys [node]} req]
-  (def req req)
-  (let [id (asset-id req)
-        breach (-> req
-                  :body-params
-                  :breach
-                  (assoc :crux.db/id id)
-                  (dissoc :id))
-        customer-id (:breach/customer breach)
-        customer (customers.model/find-by-id node customer-id)]
-    (when-not customer
-      (throw (errors/exception
-              :PROJECTNAMESPACE/customer-not-found {:id customer-id})))
-    (breaches.model/update-by-id node id breach)
-    {:data (external-view (breaches.model/find-by-id node id))}))
 
 (defn delete-breach-handler
   [{:keys [node]} req]
@@ -99,7 +60,9 @@
 
 (defn hibp-email-search
   [email]
-  (-> @(http/get (str "https://haveibeenpwned.com/api/v3/breachedaccount/" email)
+  (-> @(http/get (str "https://haveibeenpwned.com/api/v3/breachedaccount/"
+                      email
+                      "?truncateResponse=false")
                  {:as :json
                   :headers {"hibp-api-key" "58779e4f5a4d427a9cb3175dcc3b3f58"
                             "user-agent" "CerberusSecurityCheck"}})
@@ -112,8 +75,12 @@
   (let [id (asset-id req)
         {:keys [asset/type asset/data]}
         (assets.model/find-by-id node (asset-id req))
-        breach-data (case type
-                      :email (hibp-email-search data)
-                      (throw (errors/exception
-                              :PROJECTNAMESPACE/asset-type-invalid)))]
-    (breaches.model/insert! node breach-data id)))
+        existing-breach (breaches.model/find-by-id node (asset-id req))
+        breach (merge
+                existing-breach
+                {:breach/data
+                 (case type
+                   :email (hibp-email-search data)
+                   (throw (errors/exception
+                           :PROJECTNAMESPACE/asset-type-invalid)))})]
+    (breaches.model/insert! node breach :ff/ff)))

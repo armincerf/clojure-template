@@ -20,14 +20,5 @@
       :get
       {:summary "Retrieve a breach for the given asset ID"
        :responses {200 {:body :breach/ext}}
-       :handler (fn [req] (ok (breaches.domain/breach-by-id-handler req)))}
-      :put
-      {:summary "Update an breach"
-       :responses {200 {:body :breach/ext}}
-       :parameters {:body {:breach :breach/ext}}
-       :handler (fn [req] (ok (breaches.domain/update-breach-handler components req)))}
-      :delete
-      {:summary "Delete an breach"
-       :responses {200 {:body :breach/inactive}}
-       :handler (fn [req] (ok (breaches.domain/delete-breach-handler components req)))}}]]])
+       :handler (fn [req] (ok (breaches.domain/breach-by-id-handler req)))}}]]])
 

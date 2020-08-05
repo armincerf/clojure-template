@@ -60,6 +60,7 @@
                 asset/breaches] :as asset}
         @(rf/subscribe [::sub/current-asset])
         type-str (common-shared/keyword->readable-string type)
+        last-scan (:tx-time breaches)
         breaches (:breach/data breaches)]
     [:div {:class "page-content w-clearfix"}
      [:h1 {:class "page-title"}
@@ -93,9 +94,9 @@
          [:div {:class "topdashbartext number"} "5"]
          [:div {:class "topdashbartext number desctext"} "This Month"]]]]]
      [:div.asset-details.card
-      [:h3 "Asset Details"]
-      [:div.asset-details__icon
+      [:div.asset-details__icon.circlewicon
        {:class (type->icon-class type)}]
+      [:h3 "Asset Details"]
       [:div.asset-details__label
        name]
       [:div.asset__data data]
@@ -105,7 +106,7 @@
          [:div.asset__description description]])
       [:div.asset-details__item
        [:div.asset-details__label "Last scan:"]
-       [:div.asset__description "2010"]]
+       [:div.asset__description (common-shared/format-tx-time last-scan)]]
       [:h3 "Breaches"]
       [:div.asset-details__breaches
        (if (seq breaches)
