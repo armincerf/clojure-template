@@ -27,10 +27,13 @@
 
 (def prefixes
   {:customer "customer"
+   :breach "breach"
    :asset "asset"})
 
 (defn customer [] (gen-id (:customer prefixes)))
 (defn asset [] (gen-id (:asset prefixes)))
+(defn breach [] (gen-id (:breach prefixes)))
 
 (defn customer? [id] (= (namespace (keyword id)) (:customer prefixes)))
 (defn asset? [id] (= (namespace (keyword id)) (:asset prefixes)))
+(defn breach? [id] (= (namespace (keyword id)) (:breach prefixes)))

@@ -15,7 +15,7 @@
 (defn query
   [node query]
   (let [result (crux/q (crux/db node) query)]
-    (if (= 1 (count (:find query)))
+    (if (and (seq result) (= 1 (count (:find query))))
       (map first result)
       result)))
 

@@ -6,6 +6,7 @@
             [PROJECTNAMESPACE.PROJECTNAME.api.app.routes :as app]
             [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.routes :as dashboard]
             [PROJECTNAMESPACE.PROJECTNAME.api.customers.routes :as customers]
+            [PROJECTNAMESPACE.PROJECTNAME.api.breaches.routes :as breaches]
             [PROJECTNAMESPACE.PROJECTNAME.api.assets.routes :as assets]
             [reitit.ring :as ring]
             [ring.util.http-response :as response]
@@ -62,6 +63,7 @@
      ["api/v1/"
       (customers/routes components)
       (assets/routes components)
+      (breaches/routes components)
 
       ["me"
        {:name ::me
