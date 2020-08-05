@@ -563,6 +563,99 @@
 .tooltipster-sidetip.tooltipster-right .tooltipster-arrow-uncropped {
   left: -10px; }
 
+@keyframes fadeInOpacity {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+
+.toasts {
+  position: fixed;
+  bottom: 20px;
+  right: 10px;
+  margin-left: 10px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column; }
+  .toasts > * {
+    margin-bottom: 1em; }
+
+.toast {
+  min-width: 250px;
+  max-width: 100%;
+  padding: 0.5em;
+  display: flex;
+  flex-direction: column;
+  animation-name: fadeInOpacity;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-in;
+  animation-duration: 0.1s; }
+  .toast .toast__body {
+    flex: 1;
+    position: initial; }
+  .toast .toast__header {
+    padding: 0 0 .6em 0;
+    font-size: 0.7em;
+    font-weight: 400; }
+  .toast .delete {
+    cursor: pointer;
+    position: absolute;
+    align-self: flex-end;
+    z-index: 2000;
+    opacity: 0.5;
+    color: inherit; }
+  .toast .delete:hover {
+    opacity: 1; }
+
+.notification__icon {
+  padding-right: 0.5em; }
+
+.boldunderline {
+  font-weight: bold;
+  text-decoration: underline; }
+
+.notification-body__text {
+  font-size: 0.6em; }
+  .notification-body__text .boldunderline {
+    padding-bottom: 0.3em; }
+
+.toast--error {
+  background-color: red;
+  color: white; }
+
+.toast--success {
+  background-color: green;
+  color: white; }
+
+.toast--info {
+  background-color: blue;
+  color: white; }
+
+.toast__header {
+  font-weight: bold; }
+
+.breadcrumb {
+  color: black; }
+  .breadcrumb__link {
+    text-decoration-color: blue;
+    color: var(--color-contrast-medium);
+    cursor: pointer; }
+    .breadcrumb__link:not(.breadcrumb--active):hover {
+      color: blue; }
+  .breadcrumb__divider {
+    color: var(--color-contrast-medium); }
+  .breadcrumb--active {
+    font-weight: bold;
+    cursor: initial; }
+
+.debug {
+  box-shadow: 0 0 17px -5px rgba(160, 160, 160, 0.95);
+  background: lightgreen;
+  position: absolute;
+  top: -21px;
+  padding: 1em;
+  left: 25vw; }
+
 *, *::after, *::before {
   box-sizing: inherit; }
 
@@ -6756,6 +6849,8 @@ a {
     display: block; } }
 
 .logo {
+  font-size: 10px;
+  color: white;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -6956,18 +7051,6 @@ a {
 .scale__live-weight {
   max-width: 316px;
   padding: 1.5em 0; }
-
-.breadcrumb {
-  color: black; }
-  .breadcrumb__link {
-    text-decoration: none;
-    color: var(--color-contrast-medium);
-    cursor: pointer; }
-  .breadcrumb__divider {
-    color: var(--color-contrast-medium); }
-  .breadcrumb--active {
-    font-weight: bold;
-    cursor: initial; }
 
 .asset__documents {
   display: flex;
@@ -7394,77 +7477,6 @@ a {
     margin-bottom: var(--space-xs); }
   .asset__documents-group {
     justify-content: space-between; } }
-
-@keyframes fadeInOpacity {
-  0% {
-    opacity: 0; }
-  100% {
-    opacity: 1; } }
-
-.toasts {
-  position: fixed;
-  bottom: 20px;
-  right: 10px;
-  margin-left: 10px;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column; }
-  .toasts > * {
-    margin-bottom: 1em; }
-
-.toast {
-  min-width: 250px;
-  max-width: 100%;
-  padding: 0.5em;
-  display: flex;
-  flex-direction: column;
-  animation-name: fadeInOpacity;
-  animation-iteration-count: 1;
-  animation-timing-function: ease-in;
-  animation-duration: 0.1s; }
-  .toast .toast__body {
-    flex: 1;
-    position: initial; }
-  .toast .toast__header {
-    padding: 0 0 .6em 0;
-    font-size: 0.7em;
-    font-weight: 400; }
-  .toast .delete {
-    cursor: pointer;
-    position: absolute;
-    align-self: flex-end;
-    z-index: 2000;
-    opacity: 0.5;
-    color: inherit; }
-  .toast .delete:hover {
-    opacity: 1; }
-
-.notification__icon {
-  padding-right: 0.5em; }
-
-.boldunderline {
-  font-weight: bold;
-  text-decoration: underline; }
-
-.notification-body__text {
-  font-size: 0.6em; }
-  .notification-body__text .boldunderline {
-    padding-bottom: 0.3em; }
-
-.toast--error {
-  background-color: red;
-  color: white; }
-
-.toast--success {
-  background-color: green;
-  color: white; }
-
-.toast--info {
-  background-color: blue;
-  color: white; }
-
-.toast__header {
-  font-weight: bold; }
 
 .select {
   position: absolute;

@@ -109,16 +109,16 @@
   margin-left: -35px;
   font-family: Lato, sans-serif;
   color: #333;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
 }
 
 .searchbar {
   display: inline-block;
-  width: 75%;
+  width: 64%;
   padding-top: 20px;
   padding-bottom: 20px;
-  padding-left: 40px;
+  padding-left: 43px;
   border-style: none;
   border-top-left-radius: 3px;
   border-bottom-left-radius: 3px;
@@ -177,6 +177,7 @@
 
 .form {
   margin-bottom: -9px;
+  margin-left: 88px;
 }
 
 .top-nav__right {
@@ -339,7 +340,7 @@
   color: hsla(0, 0%, 62.7%, 0);
 }
 
-.meetingsh1 {
+.page-title {
   margin-top: 0px;
   font-family: Lato, sans-serif;
   font-size: 24px;
@@ -511,35 +512,35 @@
   float: left;
 }
 
-.meetingimgdiv {
-  width: 80px;
-  height: 80px;
+.email-icon {
+  width: 70px;
+  height: 70px;
   border-radius: 0%;
   background-image: url('../images/email-84.svg');
   background-position: 50% 50%;
   background-size: cover;
 }
 
-.meetingimgdiv.meeting2 {
+.email-icon.meeting2 {
   background-image: url('../images/Screenshot-2017-09-17-11.10.53.png');
 }
 
-.meetingimgdiv.meeting3 {
+.email-icon.meeting3 {
   background-image: url('../images/user-1.png'), -webkit-gradient(linear, left top, left bottom, from(#f6f6f6), to(#f6f6f6));
   background-image: url('../images/user-1.png'), linear-gradient(180deg, #f6f6f6, #f6f6f6);
   background-position: 50% 50%, 0px 0px;
   background-size: cover, auto;
 }
 
-.meetingimgdiv.meeting4 {
+.email-icon.meeting4 {
   background-image: url('../images/pexels-photo-193355.jpeg');
 }
 
-.meetingimgdiv.meeting5 {
+.email-icon.meeting5 {
   background-image: url('../images/Screenshot-2017-09-17-11.10.05.png');
 }
 
-.meetingimgdiv.meeting6 {
+.email-icon.meeting6 {
   background-image: url('../images/pexels-photo-324658.jpeg');
 }
 
@@ -708,7 +709,7 @@
   display: flex;
 }
 
-.div-block-7 {
+.page-content {
   width: 72%;
   padding-bottom: 20px;
   padding-left: 15px;
@@ -1027,6 +1028,38 @@
   background-color: transparent;
 }
 
+.phone-icon {
+  width: 70px;
+  height: 70px;
+  background-image: url('../images/phone-2.svg');
+  background-position: 0px 0px;
+  background-size: auto;
+  background-repeat: no-repeat;
+}
+
+.icon {
+  width: 70px;
+}
+
+.asset-icon {
+  width: 70px;
+  height: 70px;
+}
+
+.asset-icon.password-icon {
+  background-image: url('../images/key-25.svg');
+  background-position: 0px 0px;
+  background-size: auto;
+  background-repeat: no-repeat;
+}
+
+.asset-icon.phone-number-icon {
+  background-image: url('../images/phone-2.svg');
+  background-position: 0px 0px;
+  background-size: auto;
+  background-repeat: no-repeat;
+}
+
 html.w-mod-js *[data-ix="page-load-top-bar"] {
   opacity: 0;
   -webkit-transform: translate(0px, 70px);
@@ -1210,8 +1243,21 @@ html.w-mod-js *[data-ix="meetingdetail-6"] {
   .div-block-4 {
     padding-right: 0px;
   }
-  .div-block-7 {
+  .page-content {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
     padding-right: 10px;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
   }
   .splitdiv {
     height: 110px;
@@ -1326,6 +1372,7 @@ html.w-mod-js *[data-ix="meetingdetail-6"] {
     padding-bottom: 0px;
   }
   .logo-text.navbarlogotext {
+    display: none;
     margin-top: 0px;
   }
   .searchbar.mobilesearch {
@@ -1366,7 +1413,7 @@ html.w-mod-js *[data-ix="meetingdetail-6"] {
   .meetingdetailcontain.float-left {
     width: 49%;
   }
-  .meetingimgdiv {
+  .email-icon {
     display: block;
     margin-right: auto;
     margin-left: auto;
@@ -1427,10 +1474,11 @@ html.w-mod-js *[data-ix="meetingdetail-6"] {
     border-bottom-right-radius: 0px;
   }
   .bottommorelink.bottommoreright {
+    width: 100%;
     border-bottom-left-radius: 0px;
     border-bottom-right-radius: 3px;
   }
-  .div-block-7 {
+  .page-content {
     padding-right: 15px;
     padding-left: 15px;
   }
@@ -1510,9 +1558,9 @@ html.w-mod-js *[data-ix="meetingdetail-6"] {
     font-size: 17px;
   }
   .searchbar.mobilesearch {
-    width: 120px;
+    width: 100%;
     margin-top: 8px;
-    margin-left: 15px;
+    margin-left: 0px;
   }
   .pagecontain {
     padding-top: 15px;
@@ -1520,6 +1568,15 @@ html.w-mod-js *[data-ix="meetingdetail-6"] {
   .topdashbar {
     margin-right: 5px;
     padding-bottom: 5px;
+  }
+  .topdashbartext {
+    font-size: 8px;
+  }
+  .topdashbartext.number {
+    font-size: 29px;
+  }
+  .topdashbartext.number.desctext {
+    width: 49.90625px;
   }
   .statrow {
     margin-bottom: 0px;
@@ -1608,10 +1665,13 @@ html.w-mod-js *[data-ix="meetingdetail-6"] {
     padding-top: 9px;
     padding-bottom: 9px;
   }
+  .bottommorelink.bottommoreright {
+    width: 100%;
+  }
   .detailscallinktext {
     font-size: 10px;
   }
-  .div-block-7 {
+  .page-content {
     padding-right: 6px;
   }
   .splitdiv {
