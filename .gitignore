@@ -6,6 +6,8 @@
 !**/target/*/.gitkeep
 **/data
 
+**/*.map
+
 # pack'd output
 /*.jar
 **/*.jar

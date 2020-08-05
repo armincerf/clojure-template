@@ -78,6 +78,9 @@ a {
         height: 50px;
         width: 50px;
         position: absolute;
+        box-shadow: 0 0 17px -5px hsla(0, 0%, 62.7%, 0.95);
+        font-size: 0.5em;
+        border-radius: 3px;
         top: -15px;
         left: -10px;
         background-size: contain !important;
