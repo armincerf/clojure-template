@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+  <head>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="/css/login.css"><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div class="main">
+      <div class="container a-container" id="a-container">
+        <form class="form" id="a-form" method="" action="">
+          <h2 class="form_title title">Create Account</h2>
+          <input class="form__input" type="text" placeholder="Name">
+          <input class="form__input" type="text" placeholder="Email">
+          <input class="form__input" type="password" placeholder="Password">
+          <button class="form__button button submit">SIGN UP</button>
+        </form>
+      </div>
+      <div class="container b-container" id="b-container">
+        <form class="form" id="b-form" method="" action="/app">
+          <h2 class="form_title title">Sign in to Website</h2>
+          <input class="form__input" type="text" placeholder="Email">
+          <input class="form__input" type="password" placeholder="Password"><a class="form__link">Forgot your password?</a>
+          <button class="form__button button switch__button">SIGN IN</button>
+        </form>
+      </div>
+      <div class="switch" id="switch-cnt">
+        <div class="switch__circle"></div>
+        <div class="switch__circle switch__circle--t"></div>
+        <div class="switch__container" id="switch-c1">
+          <h2 class="switch__title title">Got an account?</h2>
+          <p class="switch__description description">Quick! Your data is in danger, please log in and give it to us now! Already given your email? We need your passwords! Already given those? Then hand over your credit cards! Your wallet! NOW!</p>
+          <button class="switch__button button switch-btn">SIGN IN</button>
+        </div>
+        <div class="switch__container is-hidden" id="switch-c2">
+          <h2 class="switch__title title">Hey you!</h2>
+          <p class="switch__description description">
+              Are you worried about your personal data being stolen? Your online accounts being hacked into? Your family members strangled as they sleep? If so then we can help!* 
+          </p>
+          <button class="switch__button button switch-btn">SIGN UP</button>
+          <p class="switch__description smallprint">
+              * Lives of family members not guarrenteed
+          </p>
+
+        </div>
+      </div>
+    </div>
+    <script>
+     let switchCtn = document.querySelector("#switch-cnt");
+     let switchC1 = document.querySelector("#switch-c1");
+     let switchC2 = document.querySelector("#switch-c2");
+     let switchCircle = document.querySelectorAll(".switch__circle");
+     let switchBtn = document.querySelectorAll(".switch-btn");
+     let aContainer = document.querySelector("#a-container");
+     let bContainer = document.querySelector("#b-container");
+     let allButtons = document.querySelectorAll(".submit");
+
+     let getButtons = (e) => e.preventDefault()
+
+     let changeForm = (e) => {
+
+         switchCtn.classList.add("is-gx");
+         setTimeout(function(){
+             switchCtn.classList.remove("is-gx");
+         }, 1500)
+
+         switchCtn.classList.toggle("is-txr");
+         switchCircle[0].classList.toggle("is-txr");
+         switchCircle[1].classList.toggle("is-txr");
+
+         switchC1.classList.toggle("is-hidden");
+         switchC2.classList.toggle("is-hidden");
+         aContainer.classList.toggle("is-txl");
+         bContainer.classList.toggle("is-txl");
+         bContainer.classList.toggle("is-z200");
+     }
+
+     let mainF = (e) => {
+         for (var i = 0; i < allButtons.length; i++)
+             allButtons[i].addEventListener("click", getButtons );
+         for (var i = 0; i < switchBtn.length; i++)
+             switchBtn[i].addEventListener("click", changeForm)
+     }
+
+     window.addEventListener("load", mainF);
+
+    </script>
+  </body>
+</html>

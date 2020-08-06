@@ -12,7 +12,8 @@
             [ring.util.http-response :as response]
             [PROJECTNAMESPACE.PROJECTNAME.api.spec :as spec]
             [PROJECTNAMESPACE.PROJECTNAME.api.sse :as sse]
-            [spell-spec.alpha :as spell]))
+            [spell-spec.alpha :as spell]
+            [clojure.java.io :as io]))
 
 (defn- devcards-html
   "Serves devcards"
@@ -46,6 +47,11 @@
       :or {middleware []}}]
   (let [{:keys [node]} components]
     ["/" {:middleware middleware}
+     ["login" {:name :login
+               :get {:handler (fn handle-login
+                                [req]
+                                (-> (response/ok (slurp (io/resource "signup.html")))
+                                    (response/content-type "text/html")))}}]
      (dashboard/routes components)
      (app/routes components)
      ["devcards" {:name :cljs-devcards
