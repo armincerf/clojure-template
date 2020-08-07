@@ -1,4 +1,6 @@
 @import "foundation";
+@import 'base';
+@import 'custom-style';
 
 body {
     --primary: #2290ff;
@@ -130,3 +132,99 @@ a {
     }
 }
 
+.meetingtitle.meetingemail {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.modal-wrapper {
+    display: flex;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1040
+}
+
+.modal-backdrop {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    opacity: 0.6;
+    z-index: 1;
+    animation: fade-in 0.2s;
+}
+
+.modal-child {
+    width: 80%;
+    max-width: 600px;
+    margin: auto;
+    z-index: 10;
+    animation: fade-in-child 0.2s;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 0.6;
+    }
+}
+
+@keyframes fade-in-child {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal__box-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-contrast-high);
+
+    &--error {
+        background: var(--color-error);
+    }
+}
+
+.modal__box-header-title {
+    color: white;
+    font-weight: bold;
+}
+
+.modal__box-header-icon {
+    cursor: pointer;
+}
+
+.modal__box-body {
+    padding: var(--space-md);
+    background: white;
+    max-height: 70vh;
+    overflow-y: scroll;
+}
+
+.modal__box-footer {
+    height: 40px;
+    background: var(--color-contrast-low);
+}
+
+.breach-details {
+    .date {
+        color: var(--primary);
+        padding: 5px 0;
+        display: block;
+        width: fit-content;
+    }
+}
