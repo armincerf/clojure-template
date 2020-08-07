@@ -11,7 +11,7 @@
             [ring.util.time :as ring.util.time]
             [PROJECTNAMESPACE.PROJECTNAME.api.auth :as auth]
             [PROJECTNAMESPACE.PROJECTNAME.api.errors :as errors]
-            [PROJECTNAMESPACE.PROJECTNAME.api.utils.ring :as utils.ring])
+            [PROJECTNAMESPACE.PROJECTNAME.api.utils :as utils])
   (:import java.time.Instant
            java.util.Date))
 
@@ -43,7 +43,7 @@
   [handler]
   (fn [req respond raise]
     (handler req
-             (fn [resp] (respond (utils.ring/remove-header resp "Last-Modified")))
+             (fn [resp] (respond (utils/remove-header resp "Last-Modified")))
              raise)))
 
 (def not-modified

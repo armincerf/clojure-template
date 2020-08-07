@@ -4,6 +4,7 @@
             [muuntaja.core :as m]
             [reitit.dev.pretty :as pretty]
             [reitit.ring :as ring]
+            [reitit.coercion.spec]
             [reitit.ring.coercion :as coercion]
             [reitit.ring.middleware.muuntaja :as muuntaja]
             [reitit.ring.middleware.parameters :as parameters]
@@ -58,8 +59,9 @@
             :validate reitit.ring.spec/validate
             :data {:muuntaja m/instance
                    :middleware middleware
+                   :coercion reitit.coercion.spec/coercion
                    :exception pretty/exception}}
      ;; pretty diffs - set to false if things are getting too slow
-     false
+     true
      (assoc :reitit.middleware/transform
             (partial mw.logging/print-request-diffs request-diffs)))))

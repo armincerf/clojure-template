@@ -48,11 +48,10 @@
                                                                 crux.kv.rocksdb/kv-store
                                                                 crux.http-server/module]
                                            :crux.standalone/event-log-kv-store crux.kv.rocksdb/kv
-                                           :crux.standalone/event-log-dir #profile {:dev "data/eventlog"
-                                                                                    :test "data/test-eventlog"}
-                                           :crux.kv/db-dir #profile {:dev "data/db-dir"
-                                                                     :test "data/test-db-dir"}}
+                                           :crux.standalone/event-log-dir "data/eventlog"
+                                           :crux.kv/db-dir "data/db-dir"}
                                  :test {:crux.node/topology [crux.standalone/topology]
+                                        :crux.kv/db-dir "data/test-db-dir"
                                         :crux.standalone/event-log-kv-store crux.kv.rocksdb/kv}}
   :PROJECTNAMESPACE.PROJECTNAME.api/aleph
   {:port #profile {:prod 5000
@@ -69,6 +68,8 @@
                                 :format-negotiate
                                 [:PROJECTNAMESPACE.PROJECTNAME-errors
                                  #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api/error-registry]
+                                :cookies
+                                [:session #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api.session/opts]
                                 [:identity {:auth-method
                                             #profile {:default nil
                                                       :prod :cognito}}]
@@ -91,15 +92,21 @@
                                    :properties
                                    :deferred]}
    :components {:node #ig/ref :juxt.crux.ig/system
+
                 :secret "395609d0-621b-4f02-838a-a2353addbd9a"
                 :error-registry
                 #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api/error-registry
+                :session-opts #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api.session/opts
                 :origin #ref [:PROJECTNAMESPACE.PROJECTNAME.api/origin]
                 :event-bus #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api/event-bus}}
   :PROJECTNAMESPACE.PROJECTNAME.api/router {:request-diffs :debug
                                             :pretty-router-exceptions? true
                                             :routes [#ig/ref :PROJECTNAMESPACE.PROJECTNAME.api.routes/routes]}
   :PROJECTNAMESPACE.PROJECTNAME.api/error-registry {:registry-resource "errors.edn"}
+  :PROJECTNAMESPACE.PROJECTNAME.api.session/opts {:store {:node #ig/ref :juxt.crux.ig/system}
+                                                  :cookie-attrs {:secure true
+                                                                 :http-only true
+                                                                 :same-site :lax}}
   :PROJECTNAMESPACE.PROJECTNAME.api/seed {:node #ig/ref :juxt.crux.ig/system
                                           :seed-file-directory "/resources/seeds"}
   :PROJECTNAMESPACE.PROJECTNAME.api/event-bus nil}

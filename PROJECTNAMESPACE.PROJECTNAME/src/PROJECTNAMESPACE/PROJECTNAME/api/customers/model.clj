@@ -3,22 +3,21 @@
             [PROJECTNAMESPACE.PROJECTNAME.api.db :as db]))
 
 (defn find-all
-  [node]
-  (def node node)
-  (db/query node '{:find [?e]
-                   :where [[?e :customer/email]]
-                   :full-results? true}))
+  [db]
+  (db/query db '{:find [?e]
+                 :where [[?e :customer/email]]
+                 :full-results? true}))
 
 (dfs/defn find-by-id
-  [node customer-id :- :customer/id]
-  (db/lookup-vector node customer-id))
+  [db customer-id :- :customer/id]
+  (db/lookup-vector db customer-id))
 
-(dfs/defn delete-by-id
-  [node customer-id :- :customer/id]
-  (db/delete-by-id node [customer-id]))
+(dfs/defn delete-by-id!
+  [db customer-id :- :customer/id]
+  (db/delete-by-id! db [customer-id]))
 
-(dfs/defn update-by-id
-  [node
+(dfs/defn update-by-id!
+  [db
    customer-id :- :customer/id
    data :- :customer/ext]
-  (db/entity-update node customer-id data))
+  (db/entity-update! db customer-id data))

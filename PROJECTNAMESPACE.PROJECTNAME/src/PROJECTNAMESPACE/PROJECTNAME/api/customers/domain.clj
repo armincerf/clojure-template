@@ -7,6 +7,7 @@
             [ring.util.http-response :refer [ok]]
             [spec-tools.core :as st]
             [spec-tools.data-spec :as ds]
+            [crux.api :as crux]
             [PROJECTNAMESPACE.PROJECTNAME.api.customers.model :as customers.model]
             [PROJECTNAMESPACE.PROJECTNAME.common :as common]
             [PROJECTNAMESPACE.PROJECTNAME.api.ids :as ids]
@@ -44,22 +45,24 @@
 (defn all-customers-handler
   [{:keys [node]} _req]
   (def node node)
-  {:data (->> (customers.model/find-all node)
+  {:data (->> (customers.model/find-all (crux/db node))
               (mapv external-view))})
 
 (defn customer-by-id-handler
   [req]
-  {:data (-> req :properties :data external-view)})
+  {:data (-> req :properties :customer :data external-view)})
 
 (defn update-customer-handler
-  [{:keys [node]} req]
+  [_components req]
   (def req req)
-  (let [id (customer-id req)]
-    (customers.model/update-by-id node id (:body-params req))
-    (ok {:data {:id id :new (external-view (customers.model/find-by-id node id))}})))
+  (let [id (customer-id req)
+        db (-> req :properties :db)]
+    (customers.model/update-by-id! db id (:body-params req))
+    (ok {:data {:id id :new (external-view (customers.model/find-by-id db id))}})))
 
 (defn delete-customer-handler
-  [{:keys [node]} req]
-  (let [id (customer-id req)]
-    (customers.model/delete-by-id node id)
+  [_components req]
+  (let [id (customer-id req)
+        db (-> req :properties :db)]
+    (customers.model/delete-by-id! db id)
     (ok {:data {:id id :active false}})))

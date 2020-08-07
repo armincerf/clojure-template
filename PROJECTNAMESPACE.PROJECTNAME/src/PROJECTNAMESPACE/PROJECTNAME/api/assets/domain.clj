@@ -6,8 +6,10 @@
             [ring.util.http-response :refer [ok]]
             [spec-tools.core :as st]
             [spec-tools.data-spec :as ds]
+            [crux.api :as crux]
             [clojure.tools.logging :as log]
             [medley.core :as medley]
+            [PROJECTNAMESPACE.PROJECTNAME.api.utils :as utils]
             [PROJECTNAMESPACE.PROJECTNAME.api.errors :as errors]
             [PROJECTNAMESPACE.PROJECTNAME.api.assets.model :as assets.model]
             [PROJECTNAMESPACE.PROJECTNAME.api.breaches.model :as breaches.model]
@@ -42,26 +44,27 @@
 
 (defn external-view
   [asset]
-  (prn asset)
-  (st/select-spec ::asset-ext (common/add-external-id asset)))
+  (when asset
+    (st/select-spec ::asset-ext (common/add-external-id asset))))
 
 (defn all-assets-handler
   [{:keys [node]} _req]
   (def node node)
-  {:data (->> (assets.model/find-all node)
+  {:data (->> (assets.model/find-all (crux/db node))
               (mapv external-view))})
 
 (defn asset-by-id-handler
-  [{:keys [node]} req]
+  [_components req]
   (def req req)
-  (let [asset (-> req :properties external-view)]
+  (let [asset (-> req :properties :asset external-view)
+        db (utils/req->db req)]
     (when-not (:id asset)
       (throw (errors/exception
               :PROJECTNAMESPACE/asset-not-found
               {:id (asset-id req)})))
     {:data (assoc asset
                   :asset/breaches
-                  (breaches.model/find-by-id node (:id asset)))}))
+                  (breaches.model/find-by-id db (:id asset)))}))
 
 (defn add-asset-handler
   [{:keys [node]} req]
@@ -70,14 +73,14 @@
                       :body-params
                       :asset
                       (assoc :crux.db/id (ids/asset)))
+        db (crux/db node)
         _assert-asset-exists
         (when-not asset
           (throw (errors/exception :missing-field)))
         customer-id (:asset/customer asset)
         ;;hardcode until auth in place
-        customer-id (:crux.db/id (first (customers.model/find-all node)))
-        customer (customers.model/find-by-id node customer-id)]
-    (prn asset)
+        customer-id (:crux.db/id (first (customers.model/find-all db)))
+        customer (customers.model/find-by-id db customer-id)]
     (when-not customer
       (throw (errors/exception
               :PROJECTNAMESPACE/customer-not-found {:id customer-id})))
@@ -95,16 +98,18 @@
                   :asset
                   (assoc :crux.db/id id)
                   (dissoc :id))
+        db (utils/req->db req)
         customer-id (:asset/customer asset)
-        customer (customers.model/find-by-id node customer-id)]
+        customer (customers.model/find-by-id db customer-id)]
     (when-not customer
       (throw (errors/exception
               :PROJECTNAMESPACE/customer-not-found {:id customer-id})))
-    (assets.model/update-by-id node id asset)
-    {:data (external-view (assets.model/find-by-id node id))}))
+    (assets.model/update-by-id! db id asset)
+    {:data (external-view (assets.model/find-by-id db id))}))
 
 (defn delete-asset-handler
   [{:keys [node]} req]
-  (let [id (asset-id req)]
-    (assets.model/delete-by-id node id)
+  (let [id (asset-id req)
+        db (utils/req->db req)]
+    (assets.model/delete-by-id! db id)
     {:data {:id id :active false}}))

@@ -19,7 +19,6 @@
     [:title "PROJECTNAME"]
     (hiccup/include-css "/webjars/font-awesome/5.13.0/css/all.min.css")]
    [:body
-    
     (hiccup/include-js "/app.js"
                        "/js/util.js"
                        "/js/scripts.min.js")]))
@@ -29,7 +28,7 @@
   (let [handle-index (fn handle-index
                        [req]
                        (-> (response/ok
-                           (slurp (io/resource"index.html")) )
+                           (slurp (io/resource "index.html")))
                            (response/content-type "text/html")))]
     ["app"
      ;; TODO is there a better way to allow both /app and /app/* in reitit??

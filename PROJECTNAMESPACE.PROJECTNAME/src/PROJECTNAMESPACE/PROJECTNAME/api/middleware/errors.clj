@@ -44,7 +44,7 @@
             :body {:error_type (csk/->snake_case type)
                    :error_code (csk/->snake_case code)
                    :error_message message
-                   :info (cske/transform-keys csk/->snake_case info)
+                   :info info
                    :http_status status}}
      as-json? (response/content-type "application/json")
      as-json? (update :body jsonista/write-value-as-string))))

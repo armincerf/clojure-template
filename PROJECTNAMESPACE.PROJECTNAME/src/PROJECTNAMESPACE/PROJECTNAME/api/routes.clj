@@ -2,6 +2,7 @@
   (:require [clojure.spec.alpha :as s]
             [crux.api :as crux]
             [hiccup.page :as hiccup]
+            [ring.util.http-response :refer [see-other]]
             [integrant.core :as ig]
             [PROJECTNAMESPACE.PROJECTNAME.api.app.routes :as app]
             [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.routes :as dashboard]
@@ -13,7 +14,8 @@
             [PROJECTNAMESPACE.PROJECTNAME.api.spec :as spec]
             [PROJECTNAMESPACE.PROJECTNAME.api.sse :as sse]
             [spell-spec.alpha :as spell]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [clojure.string :as str]))
 
 (defn- devcards-html
   "Serves devcards"
@@ -51,7 +53,17 @@
                :get {:handler (fn handle-login
                                 [req]
                                 (-> (response/ok (slurp (io/resource "signup.html")))
-                                    (response/content-type "text/html")))}}]
+                                    (response/content-type "text/html")))}
+               :post {:parameters {:form {:email ::spec/email
+                                          :password ::spec/non-blank-string}}
+                      :handler (fn login-user
+                                 [req]
+                                 (def req req)
+                                 (let [{:keys [email password]} req]
+                                   (if (some->> email
+                                                (str/includes? "admin"))
+                                     (see-other "/dashboard")
+                                     (see-other "/app"))))}}]
      (dashboard/routes components)
      (app/routes components)
      ["devcards" {:name :cljs-devcards
@@ -78,8 +90,7 @@
                          (response/ok (:identity req)))}}]
       ["data"
        {:name ::ui-data-resource
-        :get {:responses {200 seq?}
-              :handler (fn [req]
+        :get {:handler (fn [req]
                          (->> (crux/q
                                (crux/db node)
                                '{:find [?e]

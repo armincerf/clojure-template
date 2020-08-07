@@ -18,6 +18,8 @@
         new-data "imnew@email.com"
         updated-asset (assoc (first assets) :asset/data new-data)]
     (t/testing "Get all assets returns valid body"
+      (t/is (utils/submap? {:status 200} assets-resp))
+      (t/is (seq assets))
       (t/is (nil? (s/explain-data  ::assets.domain/asset-ext (first assets)))))
     (t/testing "Get asset by id returns correct asset"
       (let [resp (utils/request-to ::assets.routes/asset-resource
@@ -67,7 +69,6 @@
           (t/is (nil? (s/explain-data  ::assets.domain/asset-ext
                                        (:data (:body add-asset-resp))))))
         (t/testing "Can find new asset"
-          (prn new-id new-asset)
           (t/is (utils/submap? {:status 200
                                 :body
                                 {:data

@@ -1,6 +1,7 @@
 (ns PROJECTNAMESPACE.PROJECTNAME.api.customers.routes
   (:require [clojure.spec.alpha :as s]
             [ring.util.http-response :refer [ok]]
+            [crux.api :as crux]
             [PROJECTNAMESPACE.PROJECTNAME.api.customers.model :as customers.model]
             [PROJECTNAMESPACE.PROJECTNAME.api.customers.domain :as customers.domain]))
 
@@ -15,8 +16,12 @@
        :handler (fn [req] (ok (customers.domain/all-customers-handler components req)))}}]
     ["/:id"
      {:name ::customer-resource
-      :properties (fn [req] (customers.model/find-by-id (:node components)
-                                                        (customers.domain/customer-id req)))
+      :properties (fn [req]
+                    (let [db (crux/db (:node components))]
+                      {:db db
+                       :customer (customers.model/find-by-id
+                                  db
+                                  (customers.domain/customer-id req))}))
       :parameters {:path {:id string?}}
       :get
       {:summary "Retrieve a customer"
@@ -29,6 +34,5 @@
        :handler (fn [req] (ok (customers.domain/update-customer-handler components req)))}
       :delete
       {:summary "Delete a customer"
-       :responses {200 {:body :customer/inactive}}
        :handler (fn [req] (customers.domain/delete-customer-handler components req))}}]]])
 

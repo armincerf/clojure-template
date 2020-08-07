@@ -28,12 +28,15 @@
 (def prefixes
   {:customer "customer"
    :breach "breach"
-   :asset "asset"})
+   :asset "asset"
+   :session "sesh"})
 
+(defn session [] (gen-id (:session prefixes)))
 (defn customer [] (gen-id (:customer prefixes)))
 (defn asset [] (gen-id (:asset prefixes)))
 (defn breach [] (gen-id (:breach prefixes)))
 
 (defn customer? [id] (= (namespace (keyword id)) (:customer prefixes)))
+(defn session? [id] (= (namespace (keyword id)) (:session prefixes)))
 (defn asset? [id] (= (namespace (keyword id)) (:asset prefixes)))
 (defn breach? [id] (= (namespace (keyword id)) (:breach prefixes)))

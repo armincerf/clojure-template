@@ -5,28 +5,27 @@
             [PROJECTNAMESPACE.PROJECTNAME.api.db :as db]))
 
 (defn find-all
-  [node]
-  (def node node)
-  (db/query node '{:find [(eql/project ?e [*])]
-                   :where [[?e :asset/type]]}))
+  [db]
+  (def db db)
+  (first (db/query db '{:find [(eql/project ?e [*])]
+                       :where [[?e :asset/type]]})))
 
 (dfs/defn insert!
-  [node
+  [db
    data :- :asset/int]
-  (prn "adding new asset" (:asset/customer data))
-  (db/insert! node data))
+  (db/insert! db data))
 
 (dfs/defn find-by-id
-  [node asset-id :- :asset/id]
+  [db asset-id :- :asset/id]
   (log/info "finding " asset-id)
-  (db/lookup-vector node asset-id))
+  (db/lookup-vector db asset-id))
 
-(dfs/defn delete-by-id
-  [node asset-id :- :asset/id]
-  (db/delete-by-id node [asset-id]))
+(dfs/defn delete-by-id!
+  [db asset-id :- :asset/id]
+  (db/delete-by-id! db [asset-id]))
 
-(dfs/defn update-by-id
-  [node
+(dfs/defn update-by-id!
+  [db
    asset-id :- :asset/id
    data :- :asset/int]
-  (db/entity-update node asset-id data))
+  (db/entity-update! db asset-id data))

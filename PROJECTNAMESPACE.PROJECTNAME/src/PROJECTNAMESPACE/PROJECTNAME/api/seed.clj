@@ -68,7 +68,7 @@
            :asset/name "User defined name for data"
            :asset/description "User defined description for data, could potentially be
            quite long although probably not."})]
-    ;(db/drop-db! node)
-    ;(db/insert! node (concat documents-from-seed-files assets))
+    (db/drop-db! node)
+    (db/insert! node (concat documents-from-seed-files assets))
     ))
 

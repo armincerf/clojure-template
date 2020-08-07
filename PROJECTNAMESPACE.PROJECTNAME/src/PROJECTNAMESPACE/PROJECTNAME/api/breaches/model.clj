@@ -6,9 +6,9 @@
             [PROJECTNAMESPACE.PROJECTNAME.api.ids :as ids]))
 
 (defn find-all
-  [node]
-  (def node node)
-  (db/query node '{:find [(eql/project ?e [*])]
+  [db]
+  (def db db)
+  (db/query db '{:find [(eql/project ?e [*])]
                    :where [[?e :breach/type]]}))
 
 (dfs/defn insert!
@@ -22,20 +22,23 @@
                     breach)))
 
 (dfs/defn find-by-id
-  [node asset-id :- :asset/id]
+  [db asset-id :- :asset/id]
   (log/info "finding " asset-id)
+  (def db db)
+  (def asset-id asset-id)
   (first
    (db/query-with-last-updated
-    node {:find '[(eql/project ?breach [:breach/data :crux.db/id])]
-          :where '[[?breach :breach/assets id]]
-          :args [{'id asset-id}]})))
+    db
+    {:find '[(eql/project ?breach [:breach/data :crux.db/id])]
+     :where '[[?breach :breach/assets id]]
+     :args [{'id asset-id}]})))
 
-(dfs/defn delete-by-id
+(dfs/defn delete-by-id!
   [node breach-id :- :breach/id]
-  (db/delete-by-id node [breach-id]))
+  (db/delete-by-id! node [breach-id]))
 
-(dfs/defn update-by-id
+(dfs/defn update-by-id!
   [node
    breach-id :- :breach/id
    data :- :breach/int]
-  (db/entity-update node breach-id data))
+  (db/entity-update! node breach-id data))
