@@ -32,10 +32,7 @@
                      (.preventDefault event)
                      (.stopPropagation event)))}]]
     [:div.modal__box-body
-     [common/pprint-code {:key "value"
-                          :nested {:foo "bar"
-                                   :nested {:foo "bar"
-                                            :nested {:foo "bar"}}}}]]
+     child]
     [:div.modal__box-footer]]])
 
 (defn modal
@@ -147,7 +144,7 @@
           [:div {:class "top-nav__plus w-dropdown-toggle"}
            [:div "+"]]
           [:nav {:class (str "profile-dropdown w-dropdown-list" (when show-menu? " w--open"))}
-           [:a {:href "#", :data-ix "new-interaction-2", :class "leftmenulink leftlogout toplogout w-inline-block"}
+           [:a {:href "/login", :data-ix "new-interaction-2", :class "leftmenulink leftlogout toplogout w-inline-block"}
             [:div {:class "w-row"}
              [:div {:class "w-hidden-main w-hidden-medium w-hidden-small w-hidden-tiny w-col w-col-2"}
               [:div {:class "intext"} "i"]]
@@ -155,7 +152,7 @@
               [:div {:class "icontectleft iconbell"} "H"]]
              [:div {:class "w-col w-col-8"}
               [:div {:class "leftlinktext"} "Inbox"]]]]
-           [:a {:href "#", :class "leftmenulink leftlogout toplogout w-inline-block"}
+           [:a {:href "/login", :class "leftmenulink leftlogout toplogout w-inline-block"}
             [:div {:class "w-row"}
              [:div {:class "w-hidden-main w-hidden-medium w-hidden-small w-hidden-tiny w-col w-col-2"}
               [:div {:class "intext"} "i"]]
@@ -163,7 +160,7 @@
               [:div {:class "icontectleft"} "D"]]
              [:div {:class "w-col w-col-8"}
               [:div {:class "leftlinktext"} "Profile"]]]]
-           [:a {:href "#", :class "leftmenulink leftlogout toplogout w-inline-block"}
+           [:a {:href "/login", :class "leftmenulink leftlogout toplogout w-inline-block"}
             [:div {:class "w-row"}
              [:div {:class "w-hidden-main w-hidden-medium w-hidden-small w-hidden-tiny w-col w-col-2"}
               [:div {:class "intext"} "i"]]
@@ -204,7 +201,7 @@
              [:div {:class "icontectleft"} icon]]
             [:div {:class "w-col w-col-8 w-col-small-4 w-col-tiny-4"}
              [:div {:class "leftlinktext"} link-text]]]])
-        [:a {:href "#", :class "leftmenulink leftlogout w-inline-block"}
+        [:a {:href "/login", :class "leftmenulink leftlogout w-inline-block"}
          [:div {:class "w-row"}
           [:div {:class "w-hidden-medium w-hidden-small w-hidden-tiny w-col w-col-2 w-col-small-4 w-col-tiny-4"}
            [:div {:class "intext"} "i"]]
@@ -252,7 +249,7 @@
          [:div {:class "icontectleft"} icon]]
         [:div {:class "w-col w-col-8"}
          [:div {:class "leftlinktext"} link-text]]]])
-    [:a {:href "#", :class "leftmenulink leftlogout w-inline-block"}
+    [:a {:href "/login", :class "leftmenulink leftlogout w-inline-block"}
      [:div {:class "w-row"}
       [:div {:class "w-col w-col-2"}
        [:div {:class "intext"} "i"]]
@@ -288,3 +285,18 @@
    [:div.sidenav__item
     [:img {:src (str "/img/" nav-icon)}]
     [:li li-props link-text]]])
+
+(defn html-span
+  [html-content]
+  [:span {"dangerouslySetInnerHTML"
+          #js{:__html html-content}}])
+
+(defn breach-details
+  [response]
+  [:div.breach-details
+   [:div.breach-logo
+    [:img {:src (:LogoPath response)}]]
+   [:h1 (:Name response)]
+   [:span.date "Breach detected at "
+    (:AddedDate response)]
+   [html-span (:Description response)]])

@@ -111,5 +111,4 @@
   "Given a route key and map containing an namespaced id path param, returns a url
   string"
   [key params]
-  (prn params)
   (rfe/href key (medley/map-vals common/id-key params)))

@@ -11,7 +11,7 @@
      {:name ::breaches-collection
       :get
       {:summary "Retrieve all breaches"
-       :responses {200 {:body {:data (s/coll-of :breach/ext)}}}
+
        :handler (fn [req] (ok (breaches.domain/all-breaches-handler components req)))}}]
     ["/:asset-id"
      {:name ::breach-resource
@@ -19,6 +19,13 @@
       :parameters {:path {:asset-id string?}}
       :get
       {:summary "Retrieve a breach for the given asset ID"
-       :responses {200 {:body :breach/ext}}
-       :handler (fn [req] (ok (breaches.domain/breach-by-id-handler req)))}}]]])
+
+       :handler (fn [req] (ok (breaches.domain/breach-by-id-handler req)))}}]
+    ["/:breach-name/details"
+     {:name ::breach-details
+      :parameters {:path {:breach-name string?}}
+      :get
+      {:summary "Retrieve breach details for the given name"
+
+       :handler (fn [req] (ok {:data (breaches.domain/breach-details-handler req)}))}}]]])
 

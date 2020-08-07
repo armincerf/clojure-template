@@ -61,6 +61,19 @@
       [:div.fill-loader__base]
       [:div.fill-loader__fill.fill-loader__fill--3rd]]]]])
 
+(defn loader
+  []
+  [:div.fill-loader.fill-loader--v5
+   {:role "alert"}
+   [:p.fill-loader__label "Content is loading..."]
+   [:div
+    {:aria-hidden "true"}
+    [:div.fill-loader__base]
+    [:div.fill-loader__fill.fill-loader__fill--1st]
+    [:div.fill-loader__fill.fill-loader__fill--2nd]
+    [:div.fill-loader__fill.fill-loader__fill--3rd]
+    [:div.fill-loader__fill.fill-loader__fill--4th]]])
+
 (defn find-by-id
   "Given a list of maps, find the first map where the :id key equals the given id"
   [data id]

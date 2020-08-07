@@ -22,7 +22,7 @@
      (for [asset-type [:email :phone-number :password]
            :let [active? (= type-keyword asset-type)]]
        ^{:key asset-type}
-       [:a.card.asset-type
+       [:button.card.asset-type
         {:class (when active? "asset-type--active")
          :on-click #(reset! selected-type asset-type)}
         (common-shared/keyword->readable-string asset-type)])]))
@@ -60,7 +60,7 @@
                 asset/breaches] :as asset}
         @(rf/subscribe [::sub/current-asset])
         type-str (common-shared/keyword->readable-string type)
-        last-scan (:tx-time breaches)
+        last-scan (:valid-time breaches)
         breaches (:breach/data breaches)]
     [:div {:class "page-content w-clearfix"}
      [:h1 {:class "page-title"}
@@ -116,7 +116,9 @@
          more details about the breach."]
           (for [{:keys [Name]} breaches]
             ^{:key Name}
-            [:a Name])]
+            [:a
+             {:on-click #(rf/dispatch [:asset/show-breach-detail Name])}
+             Name])]
          [:p "Good news! Your data has not been found in any data breaches or
          hacks"])
        [:button
@@ -167,38 +169,41 @@
 
 (defn my-assets
   []
-  (let [assets @(rf/subscribe [::sub/assets])]
+  (let [assets @(rf/subscribe [::sub/assets])
+        loading? @(rf/subscribe [:loading?])]
     [:div.assets
-     (for [{:keys [id
-                   asset/data
-                   asset/name
-                   asset/type]} assets
-           :let [last-scan "Last scanned - 10:30 AM"]]
-       ^{:key id}
-       [:div {:class "meetingdetailcontain float-left"}
-        [:div {:class "meetingdetailtopdiv"}
-         [:div {:class "w-row"}
-          [:div {:class "column-10 w-col w-col-5"}
-           [:div {:class (type->icon-class type)}]]
-          [:div {:class "w-col w-col-7"}
-           [:div {:class "meetingtitle"}
-            (common-shared/keyword->readable-string type)]
-           [:div {:class "meetingtitle meetingemail"}
-            (if (= :password type)
-              "*********"
-              data)]
-           [:div {:class "meetingtitle meetingemail meetingtime w-hidden-small w-hidden-tiny"} last-scan]]]]
-        [:div {:class "meetingdetailmiddlediv"}
-         [:div {:class "w-row"}
-          [:div {:class "w-col w-col-6"}
-           [:div {:class "alert-text"} (rand-nth ["No" "2" "3"]) " New Alerts"]]
-          [:div {:class "w-col w-col-6"}
-           [:div {:class "alert-text resolved-alert"} (rand-nth ["1" "3"]) " Resolved Alerts"]]]]
-        [:div {:class "meetingtitle meetingemail only-mobile"}
-         last-scan]
-        [:a {:href (common/id-route :app/asset-profile {:asset id})
-             :class "bottommorelink bottommoreright w-inline-block"}
-         [:div {:class "detailscallinktext"} "View Details"]]])]))
+     (if loading?
+       [common-shared/loader]
+       (for [{:keys [id
+                     asset/data
+                     asset/name
+                     asset/type]} assets
+             :let [last-scan "Last scanned - 10:30 AM"]]
+         ^{:key id}
+         [:div {:class "meetingdetailcontain float-left"}
+          [:div {:class "meetingdetailtopdiv"}
+           [:div {:class "w-row"}
+            [:div {:class "column-10 w-col w-col-5"}
+             [:div {:class (type->icon-class type)}]]
+            [:div {:class "w-col w-col-7"}
+             [:div {:class "meetingtitle"}
+              (common-shared/keyword->readable-string type)]
+             [:div {:class "meetingtitle meetingemail"}
+              (if (= :password type)
+                "*********"
+                data)]
+             [:div {:class "meetingtitle meetingemail meetingtime w-hidden-small w-hidden-tiny"} last-scan]]]]
+          [:div {:class "meetingdetailmiddlediv"}
+           [:div {:class "w-row"}
+            [:div {:class "w-col w-col-6"}
+             [:div {:class "alert-text"} (rand-nth ["No" "2" "3"]) " New Alerts"]]
+            [:div {:class "w-col w-col-6"}
+             [:div {:class "alert-text resolved-alert"} (rand-nth ["1" "3"]) " Resolved Alerts"]]]]
+          [:div {:class "meetingtitle meetingemail only-mobile"}
+           last-scan]
+          [:a {:href (common/id-route :app/asset-profile {:asset id})
+               :class "bottommorelink bottommoreright w-inline-block"}
+           [:div {:class "detailscallinktext"} "View Details"]]]))]))
 
 (defn overview
   []

@@ -3,6 +3,8 @@
             [clojure.string :as string]
             [re-frame.core :as rf]
             [PROJECTNAMESPACE.PROJECTNAME.common :as common]
+            [PROJECTNAMESPACE.PROJECTNAME.frontend.app.components :as components]
+            [PROJECTNAMESPACE.PROJECTNAME.frontend.common :as frontend.common]
             [PROJECTNAMESPACE.PROJECTNAME.frontend.ajax :as ajax]
             [medley.core :as medley]
             [clojure.string :as str]))
@@ -77,3 +79,22 @@
                (:data response))
               (assoc :loading? false))})))
 
+
+(rf/reg-event-fx
+ :asset/show-breach-detail
+ (fn [{:keys [db]} [_ breach-name]]
+   (prn breach-name)
+   (assoc (ajax/get-request
+           (str "/api/v1/breaches/" breach-name "/details")
+           [:asset/show-breach-success]
+           [:generic-failure])
+          :db (assoc db :loading? true))))
+
+(rf/reg-event-fx
+ :asset/show-breach-success
+ (fn [{:keys [db]} [_ response]]
+   (let [data response]
+     {:dispatch [:modal {:show? true
+                         :title "Breach Details"
+                         :child [components/breach-details response]}]
+      :db (assoc db :loading? false)})))
