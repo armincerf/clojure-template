@@ -1,6 +1,8 @@
 (ns PROJECTNAMESPACE.PROJECTNAME.api.seed
   (:require [clojure.spec.alpha :as s]
             [cheshire.core :as json]
+            [criterium.core :refer [quick-bench]]
+            [crux.api :as crux]
             [integrant.core :as ig]
             [spell-spec.alpha :as spell]
             [clojure.edn :as edn]
@@ -23,6 +25,37 @@
    #(when (nil? (namespace %))
       (keyword ns (name %)))
    obj))
+
+
+
+(defn process-file-by-lines
+  "Process file reading it line-by-line"
+  ([file]
+   (process-file-by-lines file identity))
+  ([file process-fn]
+   (process-file-by-lines file process-fn println))
+  ([file process-fn output-fn]
+   (with-open [rdr (clojure.java.io/reader file)]
+     (doseq [line (line-seq rdr)]
+       (output-fn
+        (process-fn line))))))
+
+(defn seed-passwords
+  [node]
+  (with-open [rdr (clojure.java.io/reader "/Volumes/Shared/passwords/passwords.txt")]
+    (doseq [n (range 10000)
+            :let [chunk-size 10000]]
+      (let [data (for [line (->> rdr
+                                 line-seq
+                                 (take chunk-size))]
+                   (str/split line #":"))
+            hashes (map first data)
+            freqs (map second data)]
+        (prn (crux/submit-tx node [[:crux.tx/put
+                                    {:crux.db/id (first hashes)
+                                     :password/hash-set (vec hashes)
+                                     :password/freq-set (vec freqs)}]])
+             (first hashes))))))
 
 (defmethod ig/init-key :PROJECTNAMESPACE.PROJECTNAME.api/seed
   [_ {:keys [node seed-file-directory]}]
@@ -68,7 +101,7 @@
            :asset/name "User defined name for data"
            :asset/description "User defined description for data, could potentially be
            quite long although probably not."})]
-    (db/drop-db! node)
-    (db/insert! node (concat documents-from-seed-files assets))
+    ;(db/drop-db! node)
+    ;(db/insert! node (concat documents-from-seed-files assets))
     ))
 

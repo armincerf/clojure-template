@@ -7,8 +7,8 @@
 (defn find-all
   [db]
   (def db db)
-  (first (db/query db '{:find [(eql/project ?e [*])]
-                       :where [[?e :asset/type]]})))
+  (db/query db '{:find [(eql/project ?e [*])]
+                 :where [[?e :asset/type]]}))
 
 (dfs/defn insert!
   [db

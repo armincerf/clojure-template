@@ -8,7 +8,7 @@
   juxt/crux-http-server {:mvn/version "20.07-1.10.0-alpha"}
   tick {:mvn/version "0.4.23-alpha"}
   metosin/reitit {:mvn/version "0.4.2"}
-
+  criterium {:mvn/version "0.4.6"}
   net.danielcompton/defn-spec-alpha {:mvn/version "0.1.0"}
   org.clojure/spec.alpha {:mvn/version "0.2.187"}
   com.bhauman/spell-spec {:mvn/version "0.1.1"}
