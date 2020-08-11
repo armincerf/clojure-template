@@ -8,12 +8,12 @@
   <body>
     <div class="main">
       <div class="container a-container" id="a-container">
-        <form class="form" id="a-form" method="" action="">
+        <form class="form" id="a-form" method="POST" action="/signup">
           <h2 class="form_title title">Create Account</h2>
-          <input class="form__input" type="text" placeholder="Name">
-          <input class="form__input" type="text" placeholder="Email">
-          <input class="form__input" type="password" placeholder="Password">
-          <button class="form__button button submit">SIGN UP</button>
+          <input class="form__input" type="text" name="name" placeholder="Name">
+          <input class="form__input" type="text" name="email" placeholder="Email">
+          <input class="form__input" type="password" name="password" placeholder="Password">
+          <button class="form__button button">SIGN UP</button>
         </form>
       </div>
       <div class="container b-container" id="b-container">
@@ -73,6 +73,11 @@
          aContainer.classList.toggle("is-txl");
          bContainer.classList.toggle("is-txl");
          bContainer.classList.toggle("is-z200");
+     }
+     url = new URL(window.location.href);
+
+     if (url.searchParams.get('next')) {
+         changeForm();
      }
 
      let mainF = (e) => {

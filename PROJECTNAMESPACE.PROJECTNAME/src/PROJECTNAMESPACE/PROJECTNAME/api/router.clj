@@ -48,14 +48,26 @@
              :coerce-response coercion/coerce-response-middleware
              ;; coercing request parameters
              :coerce-request coercion/coerce-request-middleware
+             ;; handle x-forwarded-proto headers
+             :forwarded-proto mw/forwarded-proto
+             ;; handle x-forwarded-for headers
+             :forwarded-for mw/forwarded-for
              ;; handling manifold
              :deferred mw/deferred-handler
-             ;; authenticate jwt from cognito and add :identity property
+             ;; manage sessions via :session property
+             :session mw/session-middleware
+             ;; authenticate and add :identity property
              :identity mw/authentication-middleware
+             ;; authorize request via access rules
+             :authorization mw/authorization-middleware
+             ;; manage cookies via :cookies property
+             :cookies mw/cookies-middleware
              ;; allow properties fns
              :properties mw/request-properties
              ;; allows not-modified responses
-             :not-modified mw/not-modified}
+             :not-modified mw/not-modified
+             ;; add various security related headers
+             :security mw/security-headers}
             :validate reitit.ring.spec/validate
             :data {:muuntaja m/instance
                    :middleware middleware

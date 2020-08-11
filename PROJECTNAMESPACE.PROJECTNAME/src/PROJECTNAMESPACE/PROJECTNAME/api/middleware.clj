@@ -3,13 +3,19 @@
             [clojure.core.async :as async]
             [clojure.java.io :as io]
             [expound.alpha :as expound]
+            [clojure.spec.alpha :as s]
             [manifold.deferred :as d]
             [reitit.ring.middleware.exception :as exception]
             [ring.core.protocols :refer [StreamableResponseBody]]
             [ring.middleware.not-modified :as not-modified]
+            [ring.middleware.cookies :as ring.mw.cookies]
+            [ring.middleware.proxy-headers :as proxy-headers]
+            [ring.middleware.ssl :as ssl]
+            [ring.middleware.x-headers :as x-headers]
             [ring.util.response :as resp]
             [ring.util.time :as ring.util.time]
-            [PROJECTNAMESPACE.PROJECTNAME.api.auth :as auth]
+            [PROJECTNAMESPACE.PROJECTNAME.api.session :as session]
+            [PROJECTNAMESPACE.PROJECTNAME.api.auth.domain :as auth.domain]
             [PROJECTNAMESPACE.PROJECTNAME.api.errors :as errors]
             [PROJECTNAMESPACE.PROJECTNAME.api.utils :as utils])
   (:import java.time.Instant
@@ -72,8 +78,8 @@
       resp)))
 
 (def authentication-middleware
-  {:name ::auth/wrap-authentication
-   :wrap auth/wrap-authentication})
+  {:name ::auth.domain/wrap-authentication
+   :wrap auth.domain/wrap-authentication})
 
 ;; Allows for event-stream content-type
 (extend-type clojure.core.async.impl.channels.ManyToManyChannel
@@ -133,6 +139,33 @@
                (catch Throwable t
                  (raise t)))))})
 
+(def forwarded-proto
+  {:name ::forwarded-proto
+   :wrap ssl/wrap-forwarded-scheme})
+
+(def forwarded-for
+  {:name ::forwarded-for
+   :wrap proxy-headers/wrap-forwarded-remote-addr})
+
+(def session-middleware
+  {:name ::session/wrap-session
+   :wrap session/wrap-session})
+
+(def cookies-middleware
+  {:name ::ring.mw.cookies/wrap-cookies
+   :wrap ring.mw.cookies/wrap-cookies})
+
+(s/def ::authorize
+  (s/or :handler :accessrules/handler :rule :accessrules/rule))
+
+(def authorization-middleware
+  {:name ::auth.domain/compile-authorization
+   :spec (s/keys :req-un [::authorize])
+   :compile auth.domain/compile-authorization})
+
+(def authentication-middleware
+  {:name ::auth.domain/wrap-authentication
+   :wrap auth.domain/wrap-authentication})
 
 (defn referrer-policy-response
   [response policy]
@@ -147,6 +180,15 @@
      (referrer-policy-response (handler request) options))
     ([request respond raise]
      (handler request #(respond (referrer-policy-response % options)) raise))))
+
+(def security-headers
+  {:name ::security-headers
+   :description "Sets default security headers where we want a single option for all of our responses"
+   :wrap (fn [handler]
+           ((comp ssl/wrap-hsts
+                  #(x-headers/wrap-content-type-options % :nosniff)
+                  #(wrap-referrer-policy % :strict-origin-when-cross-origin))
+            handler))})
 
 (defn coercion-error-handler [status]
   (let [printer (expound/custom-printer {:theme :figwheel-theme, :print-specs? false})

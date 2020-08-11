@@ -66,30 +66,32 @@
   :PROJECTNAMESPACE.PROJECTNAME.api.routes/routes
   {:middleware #profile {:test [:parameters
                                 :format-negotiate
+                                :security
                                 [:PROJECTNAMESPACE.PROJECTNAME-errors
                                  #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api/error-registry]
                                 :cookies
                                 [:session #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api.session/opts]
-                                [:identity {:auth-method
-                                            #profile {:default nil
-                                                      :prod :cognito}}]
+                                [:identity #ig/ref :juxt.crux.ig/system]
                                 :format-request
                                 :coerce-response
                                 :coerce-request
                                 :properties
+                                :authorization
                                 :deferred]
                          :default [:parameters
                                    :format-negotiate
+                                   :security
+                                   :not-modified
                                    :format-response
                                    [:PROJECTNAMESPACE.PROJECTNAME-errors
                                     #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api/error-registry]
-                                   [:identity {:auth-method
-                                               #profile {:default nil
-                                                         :prod :cognito}}]
+                                   :cookies
+                                   [:identity #ig/ref :juxt.crux.ig/system]
                                    :format-request
                                    :coerce-response
                                    :coerce-request
                                    :properties
+                                   :authorization
                                    :deferred]}
    :components {:node #ig/ref :juxt.crux.ig/system
 
@@ -97,14 +99,17 @@
                 :error-registry
                 #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api/error-registry
                 :session-opts #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api.session/opts
+                :password-hasher #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api.passwords/hasher
                 :origin #ref [:PROJECTNAMESPACE.PROJECTNAME.api/origin]
                 :event-bus #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api/event-bus}}
+  :PROJECTNAMESPACE.PROJECTNAME.api.passwords/hasher {}
   :PROJECTNAMESPACE.PROJECTNAME.api/router {:request-diffs :debug
                                             :pretty-router-exceptions? true
                                             :routes [#ig/ref :PROJECTNAMESPACE.PROJECTNAME.api.routes/routes]}
   :PROJECTNAMESPACE.PROJECTNAME.api/error-registry {:registry-resource "errors.edn"}
   :PROJECTNAMESPACE.PROJECTNAME.api.session/opts {:store {:node #ig/ref :juxt.crux.ig/system}
-                                                  :cookie-attrs {:secure true
+                                                  :cookie-attrs {:secure #profile {:dev false
+                                                                                   :default true}
                                                                  :http-only true
                                                                  :same-site :lax}}
   :PROJECTNAMESPACE.PROJECTNAME.api/seed {:node #ig/ref :juxt.crux.ig/system

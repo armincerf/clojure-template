@@ -8,6 +8,8 @@
             [spec-tools.core :as st]
             [spec-tools.data-spec :as ds]
             [crux.api :as crux]
+            [PROJECTNAMESPACE.PROJECTNAME.api.errors :as errors]
+            [PROJECTNAMESPACE.PROJECTNAME.api.passwords :as pw]
             [PROJECTNAMESPACE.PROJECTNAME.api.customers.model :as customers.model]
             [PROJECTNAMESPACE.PROJECTNAME.common :as common]
             [PROJECTNAMESPACE.PROJECTNAME.api.ids :as ids]
@@ -41,6 +43,27 @@
 (defn external-view
   [customer]
   (st/select-spec :customer/ext (common/add-external-id customer)))
+
+(defn create-customer-handler
+  [{:keys [node password-hasher]} req]
+  (def node node)
+  (def req req)
+  (let [{:keys [email password name company location phone]}
+        (some-> req :parameters :form)
+        customer {:customer/email email
+                  :customer/hashed-password (pw/validate-and-hash
+                                             password-hasher password)
+                  :customer/phone phone
+                  :customer/location location
+                  :customer/name name
+                  :customer/company company
+                  :crux.db/id (ids/customer)}
+        db (crux/db node)
+        {:keys [id] :as account}
+        (if  (customers.model/find-by-email db email)
+          (common/log-throw (errors/exception :account/already-exists {:email email}))
+          (customers.model/create! node customer))]
+    id))
 
 (defn all-customers-handler
   [{:keys [node]} _req]

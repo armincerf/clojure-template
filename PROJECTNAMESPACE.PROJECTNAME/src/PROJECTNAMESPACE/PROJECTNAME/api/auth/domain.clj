@@ -4,6 +4,7 @@
             [clojure.tools.logging :as log]
             [ring.util.http-response :refer [see-other]]
             [PROJECTNAMESPACE.PROJECTNAME.api.customers.model :as customers.model]
+            [PROJECTNAMESPACE.PROJECTNAME.api.admins.model :as admins.model]
             [PROJECTNAMESPACE.PROJECTNAME.api.auth.authorization-rules :as rules]
             [PROJECTNAMESPACE.PROJECTNAME.api.errors :as errors]
             [PROJECTNAMESPACE.PROJECTNAME.api.spec :as spec]
@@ -27,32 +28,25 @@
 (defn add-request-identity
   "Add the requesting user identity to the request properties under key `:identity`
   if the account exists, otherwise adds `nil`."
-  [request db context account-id account-type]
-  (let [find-by-id (case account-type
-                     ;:admin #(admins.model/find-by-id db %)
-                     :customer #(customers.model/find-by-id db %))]
-    (if-let [account (find-by-id account-id)]
-      (let [employee-id (get-in request [:session :employee])
-            identity-map
-            (cond-> (-> account
-                        (select-keys [:active
-                                      :email
-                                      :id
-                                      :token-account-id
-                                      :shadow-account])
-                        (assoc :authentication-context context
-                               :account-type account-type))
-              (and (= :session context)
-                   ;(= :admin account-type)
-                   )
-              (assoc :permissions ;(employees/permissions db employee-id)
-                     nil))]
-        (assoc request :identity identity-map))
-      (do (log/error "account referenced by request does not exist"
-                     {:account account-id
-                      :context context
-                      :account-type account-type})
-          (assoc request :identity nil)))))
+  ([request db context account-id account-type]
+   (add-request-identity request db context account-id account-type nil))
+  ([request db context account-id account-type oauth-token]
+   (let [find-by-id (case account-type
+                      :admin #(admins.model/find-by-id db %)
+                      :customer #(customers.model/find-by-id db %))]
+     (prn "foo" find-by-id)
+     (if-let [account (find-by-id account-id)]
+       (let [employee-id (get-in request [:session :employee])
+             {:keys [admin-id scope client-id]} oauth-token
+             identity-map (-> account
+                              (assoc :authentication-context context
+                                     :account-type account-type))]
+         (assoc request :identity identity-map))
+       (do (log/error "account referenced by request does not exist"
+                      {:account account-id
+                       :context context
+                       :account-type account-type})
+           (assoc request :identity nil))))))
 
 (defn- authenticate-via-session-cookie
   "Set the request identity (if not already set) from session cookie if provided."
@@ -74,6 +68,11 @@
     ([request]
      (handler (authenticate db request)))
     ([request respond raise]
+     (def request request)
+     (def respond respond)
+     (def raise raise)
+     (def handler handler)
+     (def db db)
      (handler (authenticate db request) respond raise))))
 
 ;; -- Authorization --
@@ -95,7 +94,7 @@
               {:failed-rule (:name handler-value)
                :uri uri
                :error-code error-code
-               :identity (select-keys identity [:id :account-type :email])})
+               :identity identity})
     (cond
       ;; Log out (expire cookies) if account does not exist
       (and role-error? (account-not-found? req))
@@ -103,8 +102,6 @@
 
       ;; Redirect to login if unauthorized
       (and role-error? browser-request?)
-
-      ;; TODO: include any existing query params
       (see-other (str "/login?next=" (URLEncoder/encode uri "UTF-8")))
 
       :else

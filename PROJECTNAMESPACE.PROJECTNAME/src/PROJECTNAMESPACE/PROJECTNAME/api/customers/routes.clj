@@ -13,7 +13,11 @@
       :get
       {:summary "Retrieve all customers"
        :responses {200 {:body {:data (s/coll-of :customer/ext)}}}
-       :handler (fn [req] (ok (customers.domain/all-customers-handler components req)))}}]
+       :handler (fn [req] (ok (customers.domain/all-customers-handler components req)))}
+      :post
+      {:summary "Creates a new customer"
+       :responses {200 {:body {:data :customer/ext}}}
+       :handler (fn [req] (ok (customers.domain/create-customer-handler components req)))}}]
     ["/:id"
      {:name ::customer-resource
       :properties (fn [req]

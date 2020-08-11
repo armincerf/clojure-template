@@ -1,5 +1,6 @@
 (ns PROJECTNAMESPACE.PROJECTNAME.api.app.routes
   (:require [ring.util.http-response :as response]
+            [PROJECTNAMESPACE.PROJECTNAME.api.auth.authorization-rules :as rules]
             [hiccup.page :as hiccup]
             [clojure.java.io :as io]))
 
@@ -31,6 +32,7 @@
                            (slurp (io/resource "index.html")))
                            (response/content-type "text/html")))]
     ["app"
+     {:authorize rules/customer-role}
      ;; TODO is there a better way to allow both /app and /app/* in reitit??
      [""  {:name :app-cljs-routes-root
            :get {:handler handle-index}}]

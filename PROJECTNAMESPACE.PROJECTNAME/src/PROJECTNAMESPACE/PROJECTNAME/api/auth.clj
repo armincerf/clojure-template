@@ -5,6 +5,9 @@
             [byte-streams :as bs]
             [cheshire.core :as json]
             [clojure.string :as string]
+            [clojure.tools.logging :as log]
+            [PROJECTNAMESPACE.PROJECTNAME.api.customers.model :as customers.model]
+            [PROJECTNAMESPACE.PROJECTNAME.api.admins.model :as admins.model]
             [PROJECTNAMESPACE.PROJECTNAME.api.errors :as errors])
   (:import java.util.Base64))
 
@@ -55,17 +58,28 @@
 (defn add-request-identity
   "Add the requesting user identity to the request properties under key `:identity`
   if the account exists, otherwise adds `nil`."
-  [components request]
-  (let [claim (if (nil? (:auth-method components))
-                {:name "John Doe"}
-                (verify-claim (:headers request)))]
-    (if-let [name (:name claim)]
-      (assoc request :identity claim)
-      (throw (errors/exception :unauthorized {:auth-method "cognito"
-                                              :claim claim})))))
+  ([request db context account-id account-type]
+   (add-request-identity request db context account-id account-type nil))
+  ([request db context account-id account-type oauth-token]
+   (let [find-by-id (case account-type
+                      :admin #(admins.model/find-by-id db %)
+                      :customer #(customers.model/find-by-id db %))]
+     (prn "foo" find-by-id)
+     (if-let [account (find-by-id account-id)]
+       (let [employee-id (get-in request [:session :employee])
+             {:keys [admin-id scope client-id]} oauth-token
+             identity-map (-> account
+                              (assoc :authentication-context context
+                                     :account-type account-type))]
+         (assoc request :identity identity-map))
+       (do (log/error "account referenced by request does not exist"
+                      {:account account-id
+                       :context context
+                       :account-type account-type})
+           (assoc request :identity nil))))))
 
 (defn- authenticate
-  "Set the request identity (if not already set) from cognito jwt"
+  "Set the request identity (if not already set)"
   [components request]
   (if (nil? (:identity request))
     (add-request-identity {:system components} request)

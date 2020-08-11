@@ -37,3 +37,19 @@
 (s/def ::asset-type
   (st/spec {:description "Type of asset, e.g phone number, email address etc"
             :spec #{:email :phone :password}}))
+
+(s/def :password-validation-token/id
+  (st/spec {:description "Password validation token id"
+            :spec string?}))
+(s/def :password-validation-token/token
+  (st/spec {:description "Password validation token string"
+            :spec string?}))
+
+(s/def :accessrules/handler
+  (st/spec {:description "Accessrules handler"
+            :spec (s/or :composition map? :fn fn?)}))
+(s/def :accessrules/rule
+  (st/spec {:description "Accessrules rule"
+            :spec (s/keys :req-un [:accessrules/handler]
+                          :opt-un [:accessrules/on-error :accessrules/redirect])}))
+

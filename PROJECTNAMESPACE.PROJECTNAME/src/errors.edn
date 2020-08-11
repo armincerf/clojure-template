@@ -16,12 +16,31 @@
  :missing-field {:type :invalid-request
                  :message "One or more fields are missing."
                  :status 400}
- :unauthorized {:type :invalid-request
-                :message "Unauthorized. Auth method = {auth-method}"
-                :status 401}
  :internal-server-error {:type :api-error
                          :message "Unable to process request due to an internal system issue."
                          :status 500}
+ :account/suspended {:type :authn-error
+                     :message "You cannot access this endpoint because your account \"{email}\" is suspended."
+                     :status 403}
+ :account/invalid-credentials {:type :authn-error
+                               :message "Invalid email or password."
+                               :status 401}
+ :account/failed-password-policy {:type :account-creation-error
+                                  :message "{message}"
+                                  :status 400}
+
+ :account/consumer-does-not-exist {:type :auth-error
+                                   :message "An account with email \"{email}\" does not exist."
+                                   :status 401}
+ :account/already-exists {:type :account-creation-error
+                          :message "An account with the email \"{email}\" already exists."
+                          :status 409}
+ :authz/not-found {:type :invalid-request
+                   :message "The resource requested does not exist: {uri}."
+                   :status 404}
+ :authz/forbidden {:type :invalid-request
+                   :message "Unauthorized request."
+                   :status 403}
  :PROJECTNAMESPACE/invalid-message {:type :invalid-request
                                     :message "Received invalid request"
                                     :status 400}

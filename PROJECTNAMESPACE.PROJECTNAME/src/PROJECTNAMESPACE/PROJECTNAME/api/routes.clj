@@ -4,9 +4,15 @@
             [hiccup.page :as hiccup]
             [ring.util.http-response :refer [see-other]]
             [integrant.core :as ig]
+            [PROJECTNAMESPACE.PROJECTNAME.api.errors :as errors]
+            [PROJECTNAMESPACE.PROJECTNAME.api.auth.authorization-rules :as rules]
+            [PROJECTNAMESPACE.PROJECTNAME.api.cookies :as cookies]
             [PROJECTNAMESPACE.PROJECTNAME.api.app.routes :as app]
+            [PROJECTNAMESPACE.PROJECTNAME.api.session :as session]
             [PROJECTNAMESPACE.PROJECTNAME.api.dashboard.routes :as dashboard]
             [PROJECTNAMESPACE.PROJECTNAME.api.customers.routes :as customers]
+            [PROJECTNAMESPACE.PROJECTNAME.api.customers.model :as customers.model]
+            [PROJECTNAMESPACE.PROJECTNAME.api.customers.domain :as customers.domain]
             [PROJECTNAMESPACE.PROJECTNAME.api.breaches.routes :as breaches]
             [PROJECTNAMESPACE.PROJECTNAME.api.assets.routes :as assets]
             [reitit.ring :as ring]
@@ -48,7 +54,8 @@
   [_ {:keys [middleware components]
       :or {middleware []}}]
   (let [{:keys [node]} components]
-    ["/" {:middleware middleware}
+    ["/" {:middleware middleware
+          :authorize rules/open}
      ["login" {:name :login
                :get {:handler (fn handle-login
                                 [req]
@@ -59,11 +66,42 @@
                       :handler (fn login-user
                                  [req]
                                  (def req req)
-                                 (let [{:keys [email password]} req]
-                                   (if (some->> email
-                                                (str/includes? "admin"))
-                                     (see-other "/dashboard")
-                                     (see-other "/app"))))}}]
+                                 (let [db (crux/db node)
+                                       _ (def db db)
+                                       {:keys [email password]} (get-in req [:parameters :form])
+                                       {:keys [crux.db/id] :as acct} (customers.model/find-by-email db email)
+                                       err-info {:email email}
+                                       correct-pw? true ;(pw/match? password-hasher password (:password acct))
+                                       ]
+                                   (cond
+                                     (nil? acct)
+                                     (throw (errors/exception :account/consumer-does-not-exist err-info))
+
+                                     (not correct-pw?)
+                                     (throw (errors/exception :account/invalid-credentials))
+
+                                     (:suspended? acct)
+                                     (throw (errors/exception :account/suspended err-info))
+
+                                     :else
+                                     {:user {:email email
+                                             :account-type :consumer}})
+                                   ;(password-reset/invalidate-consumer-token! db id)
+                                   (-> (response/see-other "/app")
+                                       (session/update! (:session req) {:login id
+                                                                        :account-type :customer})
+                                       (session/PROJECTNAME-cookie id components))))}}]
+     ["signup" {:name :signup
+                :post {:parameters {:form {:email ::spec/email
+                                           :name ::spec/non-blank-string
+                                           :password ::spec/non-blank-string}}
+                       :handler (fn [req]
+                                  (let [id (customers.domain/create-customer-handler components req)]
+                                    (-> (response/see-other "/app")
+                                        (session/update! (:session req) {:login id :account-type :customer})
+                                        (cookies/set-entitlements-cookie
+                                         id
+                                         "secret"))))}}]
      (dashboard/routes components)
      (app/routes components)
      ["devcards" {:name :cljs-devcards
@@ -79,6 +117,7 @@
       {:get {:handler #(sse/sse-handler components %)
              :no-diffs true}}]
      ["api/v1/"
+      {:authorize rules/any-role}
       (customers/routes components)
       (assets/routes components)
       (breaches/routes components)
@@ -87,6 +126,7 @@
        {:name ::me
         :get {:responses {200 {:name ::spec/non-blank-string}}
               :handler (fn [req]
+                         (def req req)
                          (response/ok (:identity req)))}}]
       ["data"
        {:name ::ui-data-resource

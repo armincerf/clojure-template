@@ -1,8 +1,13 @@
 (ns PROJECTNAMESPACE.PROJECTNAME.api.session
   (:require [clojure.spec.alpha :as s]
             [integrant.core :as ig]
+            [ring.util.codec :as codec]
+            [PROJECTNAMESPACE.PROJECTNAME.validation :refer [url?]]
             [net.danielcompton.defn-spec-alpha :as dfs]
+            [ring.middleware.cookies :as ring.mw.cookies]
             [ring.middleware.session :as ring.mw.session]
+            [ring.middleware.session.store :as session.store]
+            [PROJECTNAMESPACE.PROJECTNAME.api.utils.time :as utils.time]
             [PROJECTNAMESPACE.PROJECTNAME.crux-session-store :refer [crux-store]]
             [spell-spec.alpha :as spell]))
 
@@ -21,22 +26,52 @@
 (s/def ::cookie-attrs
   (spell/keys :req-un [::secure ::http-only ::same-site]))
 
+(s/def :session/data any?)
+
 (defmethod ig/pre-init-spec ::opts
   [_]
   (spell/keys :req-un [::store ::cookie-attrs]))
 
 (defmethod ig/init-key ::opts
   [_ {:keys [store] :as m}]
-  ;(assoc m :store (crux-store (:node store)))
-  m
-  )
+  (assoc m :store (crux-store (:node store))))
 
 (def cookie :PROJECTNAME_sid)
 
 (def expired-cookie {:value 0 :max-age -1 :path "/"})
 
+(defn encode-cookies [cookies]
+  (#'ring.mw.cookies/write-cookies cookies codec/form-encode))
+
+(def cookie-expiry-secs
+  (* 60 60 24 7))
+
+(s/def ::expires-at inst?)
+
+(s/def ::set-cookie (s/or :encoded (s/coll-of string?)
+                          :unencoded (s/keys)))
+(s/def ::url url?)
+
+(s/def ::cookie-response
+  (s/keys :req-un [::set-cookie ::expires-at ::url]))
+
+(defn PROJECTNAME-cookie
+  [response customer-id {:keys [session-opts]}]
+  (prn (:store session-opts))
+  (let [session {:login customer-id :account-type :customer}
+        session-store (:store session-opts)
+        session-key (session.store/write-session session-store nil session)
+        cookies {cookie (assoc (:cookie-attrs session-opts)
+                               :value session-key
+                               :max-age cookie-expiry-secs)}]
+    (assoc-in response [:cookies cookie]
+              {:url "/"
+               :set-cookie cookies
+               :expires-at (utils.time/add cookie-expiry-secs :seconds)})))
+
 (defn wrap-session
   [handler & [{:keys [store cookie-attrs]}]]
+  (prn "wrapping")
   (let [opts (cond-> {:cookie-attrs cookie-attrs
                       :cookie-name (name cookie)}
                store (assoc :store store))]

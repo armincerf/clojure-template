@@ -21,3 +21,11 @@
    customer-id :- :customer/id
    data :- :customer/ext]
   (db/entity-update! db customer-id data))
+
+(dfs/defn find-by-email
+  [db email :- :customer/email]
+  (db/lookup-vector db [:customer/email email]))
+
+(dfs/defn create!
+  [node attrs :- :customer/int]
+  (db/insert! node attrs))
