@@ -89,8 +89,7 @@
                                    ;(password-reset/invalidate-consumer-token! db id)
                                    (-> (response/see-other "/app")
                                        (session/update! (:session req) {:login id
-                                                                        :account-type :customer})
-                                       (session/PROJECTNAME-cookie id components))))}}]
+                                                                        :account-type :customer}))))}}]
      ["signup" {:name :signup
                 :post {:parameters {:form {:email ::spec/email
                                            :name ::spec/non-blank-string

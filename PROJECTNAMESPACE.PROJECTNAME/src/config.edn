@@ -86,6 +86,7 @@
                                    [:PROJECTNAMESPACE.PROJECTNAME-errors
                                     #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api/error-registry]
                                    :cookies
+                                   [:session #ig/ref :PROJECTNAMESPACE.PROJECTNAME.api.session/opts]
                                    [:identity #ig/ref :juxt.crux.ig/system]
                                    :format-request
                                    :coerce-response

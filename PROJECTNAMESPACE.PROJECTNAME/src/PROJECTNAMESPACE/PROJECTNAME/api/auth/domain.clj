@@ -3,6 +3,7 @@
             [clojure.spec.alpha :as s]
             [clojure.tools.logging :as log]
             [ring.util.http-response :refer [see-other]]
+            [crux.api :as crux]
             [PROJECTNAMESPACE.PROJECTNAME.api.customers.model :as customers.model]
             [PROJECTNAMESPACE.PROJECTNAME.api.admins.model :as admins.model]
             [PROJECTNAMESPACE.PROJECTNAME.api.auth.authorization-rules :as rules]
@@ -34,7 +35,6 @@
    (let [find-by-id (case account-type
                       :admin #(admins.model/find-by-id db %)
                       :customer #(customers.model/find-by-id db %))]
-     (prn "foo" find-by-id)
      (if-let [account (find-by-id account-id)]
        (let [employee-id (get-in request [:session :employee])
              {:keys [admin-id scope client-id]} oauth-token
@@ -63,17 +63,13 @@
   (authenticate-via-session-cookie req db))
 
 (defn wrap-authentication
-  [handler db]
-  (fn -wrap-authentication
-    ([request]
-     (handler (authenticate db request)))
-    ([request respond raise]
-     (def request request)
-     (def respond respond)
-     (def raise raise)
-     (def handler handler)
-     (def db db)
-     (handler (authenticate db request) respond raise))))
+  [handler node]
+  (let [db (crux/db node)]
+    (fn -wrap-authentication
+      ([request]
+       (handler (authenticate db request)))
+      ([request respond raise]
+       (handler (authenticate db request) respond raise)))))
 
 ;; -- Authorization --
 

@@ -20,9 +20,12 @@
 
 (defn admin-role
   "Request identity must be an admin."
-  [_request]
-  (log/error "Admin Roles Not Implemented")
-  (success))
+  [request]
+  (if (and (authenticated? request)
+           (req-identity/admin? request))
+    (success)
+    (error {:name ::customer-role
+            :type ::role})))
 
 (defn any-role
   "Request must be authenticated."

@@ -34,7 +34,7 @@
 
 (defmethod ig/init-key ::opts
   [_ {:keys [store] :as m}]
-  (assoc m :store (crux-store (:node store))))
+  (assoc m :store (crux-store store)))
 
 (def cookie :PROJECTNAME_sid)
 
@@ -61,17 +61,13 @@
   (let [session {:login customer-id :account-type :customer}
         session-store (:store session-opts)
         session-key (session.store/write-session session-store nil session)
-        cookies {cookie (assoc (:cookie-attrs session-opts)
-                               :value session-key
-                               :max-age cookie-expiry-secs)}]
-    (assoc-in response [:cookies cookie]
-              {:url "/"
-               :set-cookie cookies
-               :expires-at (utils.time/add cookie-expiry-secs :seconds)})))
+        cookie-attrs (assoc (:cookie-attrs session-opts)
+                            :value session-key
+                            :max-age cookie-expiry-secs)]
+    (assoc-in response [:cookies cookie] cookie-attrs)))
 
 (defn wrap-session
   [handler & [{:keys [store cookie-attrs]}]]
-  (prn "wrapping")
   (let [opts (cond-> {:cookie-attrs cookie-attrs
                       :cookie-name (name cookie)}
                store (assoc :store store))]

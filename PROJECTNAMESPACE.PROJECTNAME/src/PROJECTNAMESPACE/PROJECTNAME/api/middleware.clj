@@ -77,10 +77,6 @@
     (when (= 304 (:status resp))
       resp)))
 
-(def authentication-middleware
-  {:name ::auth.domain/wrap-authentication
-   :wrap auth.domain/wrap-authentication})
-
 ;; Allows for event-stream content-type
 (extend-type clojure.core.async.impl.channels.ManyToManyChannel
   StreamableResponseBody

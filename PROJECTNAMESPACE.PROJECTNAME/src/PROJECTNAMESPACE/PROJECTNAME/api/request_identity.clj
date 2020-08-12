@@ -15,10 +15,6 @@
   [req]
   (= :customer (account-type req)))
 
-(defn employee-permissions
+(defn admin?
   [req]
-  (set (get-in req [:identity :permissions])))
-
-(defn employee-id
-  [req]
-  (get-in req [:identity :employee]))
+  (= :admin (account-type req)))

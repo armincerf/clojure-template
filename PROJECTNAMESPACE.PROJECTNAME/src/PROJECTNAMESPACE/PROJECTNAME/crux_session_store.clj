@@ -4,50 +4,35 @@
             [PROJECTNAMESPACE.PROJECTNAME.api.db :as db]
             [ring.middleware.session.store :as rs]))
 
-(defn key->eid [db key-attr key]
-  (first
-   (crux/q db {:find '[?eid]
-               :where '[[?eid attr k]]
-               :args [{'attr key-attr
-                       'k key}]})))
-
 (defn str->uuid [s]
   (when s
     (try (java.util.UUID/fromString s)
          (catch java.lang.IllegalArgumentException e nil))))
 
-(deftype CruxStore [node key-attr auto-key-change?]
+(deftype CruxStore [node key-change?]
   rs/SessionStore
   (read-session [_ key]
-    (prn "hhi?")
     (let [uuid-key (str->uuid key)]
-      (prn "read" (when uuid-key
-                    (let [db (crux/db node)]
-                      (crux/entity db (key->eid db key-attr uuid-key)))))
       (when uuid-key
-        (let [db (crux/db node)]
-          (crux/entity db (key->eid db key-attr uuid-key))))))
+        (let [db (crux/db node)
+              session (crux/entity db uuid-key)]
+          (:value session)))))
   (write-session [_ key data]
-    (prn "hhi?")
-    (let [uuid-key (str->uuid key)
-          _ (prn "write" key data)
+    (let [uuid-key (or (str->uuid key)
+                       (java.util.UUID/randomUUID))
           db (when uuid-key (crux/db node))
-          eid (when uuid-key (key->eid db key-attr uuid-key))
-          key-change? (or (not eid) auto-key-change?)
           uuid-key (if key-change?
                      (java.util.UUID/randomUUID) uuid-key)
-          tx-data {uuid-key data}]
-      (if eid
-        (db/entity-update! node eid tx-data)
+          tx-data {:crux.db/id uuid-key
+                   :value data}]
+      (if uuid-key
+        (db/entity-update! node uuid-key tx-data)
         (db/insert! node tx-data))
       (str uuid-key)))
   (delete-session [_ key]
-    (prn "hhi?")
     (when-let [uuid-key (str->uuid key)]
-      (when-let [eid (key->eid (crux/db node) key-attr uuid-key)]
-        (db/delete-by-id! node [eid])))
+      (db/delete-by-id! node [uuid-key]))
     nil))
 
-(defn crux-store [{:keys [node key-attr auto-key-change?]
-                      :or {key-attr :session/key}}]
-  (CruxStore. node key-attr auto-key-change?))
+(defn crux-store [{:keys [node auto-key-change?]}]
+  (CruxStore. node auto-key-change?))
